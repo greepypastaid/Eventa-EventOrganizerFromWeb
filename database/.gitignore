@@ -1,1 +1,32 @@
+# Laravel & general
+/vendor
+/node_modules
+/.env
+/.vscode
+/.idea
+
+# Laravel storage and cache
+/storage/*.key
+/storage/debugbar/*
+/storage/framework/cache/data/*
+/storage/logs/*
+/storage/app/public
+/public/storage
+
+# Database
 *.sqlite*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Composer
+composer.lock
+
+# NPM/Yarn
+package-lock.json
+yarn.lock
+
+# Misc
+Homestead.yaml
+Homestead.json
