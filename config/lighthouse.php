@@ -35,8 +35,6 @@ return [
 
             // Always set the `Accept: application/json` header.
             Nuwave\Lighthouse\Http\Middleware\AcceptJson::class,
-
-            'auth:sanctum',
             // Ensures the request is authenticated.
 
             // Logs in a user if they are authenticated. In contrast to Laravel's 'auth'

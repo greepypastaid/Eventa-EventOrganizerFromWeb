@@ -63,8 +63,13 @@ type Mutation {
   ): Event @field(resolver: "App\\GraphQL\\Mutations\\EventMutation@createEvent")
   
   # Add the changePassword mutation with a dedicated resolver
-  changePassword(currentPassword: String!, newPassword: String!): Boolean
+  changePassword(
+    currentPassword: String!,
+    newPassword: String!
+  ): Boolean
+    @guard(with: ["sanctum"])
     @field(resolver: "App\\GraphQL\\Mutations\\ChangePasswordResolver")
+
 }
 
 
