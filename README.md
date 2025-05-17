@@ -9,6 +9,120 @@
 
 ## Project Description
 Eventa-EO-Web-Based is a web-based application that allows users to create and manage events. Users can create events, add participants, and track attendance.
+
+# Event Organizer Laravel Project
+
+This repository contains a Laravel-based web application for managing events.
+
+---
+
+## Requirements
+
+- PHP 8.x
+- Composer
+- MySQL or other supported database
+- Node.js & npm (optional, if you use frontend assets)
+
+## Setup Instructions
+
+1. **Clone the repository**
+-git clone https://github.com/yourusername/yourrepo.git
+-cd yourrepo
+
+3. **Install PHP dependencies**
+   
+-composer install
+
+5. **Copy environment file**
+   
+-cp .env.example .env
+
+7. **Configure .env**
+   
+-"Edit .env and set your database credentials and other environment variables."
+DB_CONNECTION=mysql
+
+DB_HOST=127.0.0.1
+
+DB_PORT=3306
+
+DB_DATABASE=your_database_name
+
+DB_USERNAME=root
+
+DB_PASSWORD=your_password
+
+9. **Generate application key**
+    
+-php artisan key:generate
+
+11. **Run database migrations**
+    
+-php artisan migrate
+
+13. **Run the application**
+    
+-php artisan serve
+
+## test what have been done(on graphql in postman)
+1. **user register**
+``
+mutation RegisterNewUser {
+  registerUser(
+    name: "Alex Johnson"
+    email: "alex.johnson@example.com"
+    password: "secure456"
+  ) {
+    token
+    user {
+      id
+      name
+      email
+    }
+  }
+}
+``
+
+2. **user login**
+   ``mutation {
+  loginUser(
+    email: "alex.johnson@example.com"
+    password: "secure456"
+  ) {
+    token
+    user {
+      id
+      name
+      email
+    }
+  }
+}
+``
+
+4. **change password**
+   ``mutation {
+  changePassword(
+    currentPassword: "secure456"
+    newPassword: "newsecure789"
+  )
+}
+``
+6. **create event**
+   ``mutation {
+  createEvent(
+    title: "LaravelConf 2025"
+    description: "Konferensi Laravel terbesar di Asia."
+    date: "2025-06-20T10:00:00"
+    location: "Jakarta Convention Center"
+  ) {
+    id
+    title
+    date
+  }
+}
+``
+*cuma contoh coba isi pake yang lain 
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
