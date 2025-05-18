@@ -9,7 +9,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 class EventThemeMutation
 {
     public function updateEventTheme($root, array $args)
-    {
+    {   
+        
         // Check if the user is authenticated
         if (!Auth::check()) {
             throw new AuthorizationException('Anda harus login untuk memperbarui tema acara.');
@@ -17,10 +18,12 @@ class EventThemeMutation
         
         $user = Auth::user();
         
+        // Uncomment the following lines if you want to restrict event theme update to authenticated users
+        /*
         // Only admin can update event theme
         if ($user->role !== 'admin') {
             throw new \Exception('Tidak diizinkan: Hanya admin yang dapat memperbarui tema acara.');
-        }
+        }*/
         
         $event = Event::findOrFail($args['eventId']);
         

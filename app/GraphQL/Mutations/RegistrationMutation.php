@@ -14,6 +14,7 @@ class RegistrationMutation
 {
     public function registerToEvent($root, array $args)
     {
+       
         // Check if the user is authenticated
         if (!Auth::check()) {
             throw new AuthorizationException('Anda harus login untuk mendaftar ke acara.');
@@ -21,7 +22,7 @@ class RegistrationMutation
 
         $user = Auth::user();
         $event = Event::findOrFail($args['input']['eventId']);
-        
+       
         // Check if user is already registered for this event
         $existingRegistration = Registration::where('user_id', $user->id)
             ->where('event_id', $event->id)

@@ -12,19 +12,22 @@ use Illuminate\Auth\Access\AuthorizationException;
 class AttendanceMutation
 {
     public function checkIn($root, array $args)
-    {
-        // Check if the user is authenticated
+    {   // Uncomment the following lines if you want to restrict check-in to authenticated users
+        
         if (!Auth::check()) {
             throw new AuthorizationException('Anda harus login untuk melakukan check-in.');
         }
         
         $user = Auth::user();
         
+        /*
+        // Check if the user is authenticated
         // Only admin can check in participants
         if ($user->role !== 'admin') {
             throw new \Exception('Tidak diizinkan: Hanya admin yang dapat melakukan check-in peserta.');
         }
-        
+        */
+
         $qrCode = $args['input']['qrCode'];
         $sessionId = $args['input']['sessionId'];
         

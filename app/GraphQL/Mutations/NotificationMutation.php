@@ -11,6 +11,7 @@ class NotificationMutation
 {
     public function sendNotification($root, array $args)
     {
+        
         // Check if the user is authenticated
         if (!Auth::check()) {
             throw new AuthorizationException('Anda harus login untuk mengirim notifikasi.');
@@ -18,6 +19,8 @@ class NotificationMutation
         
         $user = Auth::user();
         
+        // Uncomment the following lines if you want to restrict notification sending to authenticated users
+        /*
         // Only admin can send notifications
         if ($user->role !== 'admin') {
             throw new \Exception('Tidak diizinkan: Hanya admin yang dapat mengirim notifikasi.');
@@ -26,6 +29,7 @@ class NotificationMutation
         $title = $args['input']['title'];
         $message = $args['input']['message'];
         $userIds = $args['input']['userIds'];
+        */
         
         $notifications = [];
         
