@@ -15,6 +15,7 @@ class AuthResolver
             'name' => $args['name'],
             'email' => $args['email'],
             'password' => Hash::make($args['password']),
+            'role' => $args['role'] ?? 'user',
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

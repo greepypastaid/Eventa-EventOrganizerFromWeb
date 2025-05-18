@@ -25,6 +25,7 @@ type User {
   id: ID!
   name: String!
   email: String!
+  role: String!
   created_at: DateTime!
 }
 
@@ -49,20 +50,12 @@ type Event {
 }
 
 type Mutation {
-  registerUser(name: String!, email: String!, password: String!): AuthPayload 
+  registerUser(name: String!, email: String!, password: String!, role: String): AuthPayload 
     @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@register")
 
   loginUser(email: String!, password: String!): AuthPayload 
     @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@login")
 
-  createEvent(
-    title: String!
-    description: String
-    date: DateTime!
-    location: String
-  ): Event @field(resolver: "App\\GraphQL\\Mutations\\EventMutation@createEvent")
-  
-  # Add the changePassword mutation with a dedicated resolver
   changePassword(
     currentPassword: String!,
     newPassword: String!
@@ -70,6 +63,20 @@ type Mutation {
     @guard(with: ["sanctum"])
     @field(resolver: "App\\GraphQL\\Mutations\\ChangePasswordResolver")
 
+  createEvent(
+    title: String!
+    description: String
+    date: DateTime!
+    location: String
+  ): Event 
+    @guard(with: ["sanctum"]) 
+    @field(resolver: "App\\GraphQL\\Mutations\\EventMutation@createEvent")
+
+  deleteEvent(id: ID!): Boolean 
+    @guard(with: ["sanctum"])
+    @field(resolver: "App\\GraphQL\\Mutations\\EventMutation@deleteEvent")
+
+  
 }
 
 
