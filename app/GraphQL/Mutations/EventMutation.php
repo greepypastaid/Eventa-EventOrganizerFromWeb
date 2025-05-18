@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\Models\Event;
-use illuminate\Support\Facades\auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Auth\Access\AuthorizationException;
 
@@ -11,7 +11,7 @@ class EventMutation{
     public function createEvent($root, array $args){
 
         // Check if the user is authenticated
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             throw new AuthorizationException('You must be logged in to create an event.');
         }
         // Check if the user is an admin
@@ -40,7 +40,7 @@ class EventMutation{
     }
     public function deleteEvent($root, array $args){
         // Check if the user is authenticated
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             throw new AuthorizationException('You must be logged in to delete an event.');
         }
         // Check if the user is an admin

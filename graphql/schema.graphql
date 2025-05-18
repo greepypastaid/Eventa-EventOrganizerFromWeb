@@ -19,6 +19,11 @@ type Query {
     ): [User!]! @paginate(defaultCount: 10)
 
     events: [Event!]! @all(model: "App\\Models\\Event")
+    
+    me: User @auth
+    event(id: ID!): Event @field(resolver: "App\\GraphQL\\Queries\\EventQuery@event")
+    registrations(eventId: ID!): [Registration!] @field(resolver: "App\\GraphQL\\Queries\\RegistrationQuery@registrations")
+    stats(eventId: ID!): Stats @field(resolver: "App\\GraphQL\\Queries\\StatsQuery@stats")
 }
 
 type User {
@@ -27,6 +32,9 @@ type User {
   email: String!
   role: String!
   created_at: DateTime!
+  registrations: [Registration!] @hasMany
+  attendances: [Attendance!] @hasMany
+  notifications: [Notification!] @hasMany
 }
 
 type AuthPayload {
@@ -45,8 +53,13 @@ type Event {
   description: String
   date: DateTime!
   location: String
+  logo_url: String
+  primary_color: String
+  secondary_color: String
   created_at: DateTime!
   updated_at: DateTime!
+  sessions: [EventSession!] @hasMany
+  registrations: [Registration!] @hasMany
 }
 
 type EventSession {
@@ -56,6 +69,111 @@ type EventSession {
   startTime: String!
   endTime: String!
   event: Event! @belongsTo
+  attendances: [Attendance!] @hasMany
+}
+
+type Registration {
+  id: ID!
+  event: Event! @belongsTo
+  participant: User! @belongsTo(relation: "participant")
+  ticket: Ticket! @belongsTo
+  verified: Boolean!
+  custom_fields: [CustomField!]
+  created_at: DateTime!
+}
+
+type Ticket {
+  id: ID!
+  qrCode: String!
+  sentAt: DateTime
+  created_at: DateTime!
+}
+
+type Attendance {
+  id: ID!
+  participant: User! @belongsTo(relation: "participant")
+  session: EventSession! @belongsTo
+  checkedInAt: DateTime!
+  created_at: DateTime!
+}
+
+type Notification {
+  id: ID!
+  title: String!
+  message: String!
+  recipient: User! @belongsTo(relation: "recipient")
+  sentAt: DateTime!
+  created_at: DateTime!
+}
+
+type Stats {
+  totalRegistrations: Int!
+  verifiedRegistrations: Int!
+  sessionAttendance: [SessionAttendance!]!
+}
+
+type SessionAttendance {
+  session: String!
+  count: Int!
+}
+
+type CustomField {
+  name: String!
+  value: String!
+}
+
+input CustomFieldInput {
+  name: String!
+  value: String!
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+  role: String
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input EventInput {
+  title: String!
+  description: String
+  date: DateTime!
+  location: String
+}
+
+input SessionInput {
+  title: String!
+  speaker: String
+  startTime: String!
+  endTime: String!
+  event_id: ID!
+}
+
+input RegistrationInput {
+  eventId: ID!
+  customFields: [CustomFieldInput]
+}
+
+input QRCheckInInput {
+  qrCode: String!
+  sessionId: ID!
+}
+
+input NotificationInput {
+  title: String!
+  message: String!
+  userIds: [ID!]!
+}
+
+input EventThemeInput {
+  logoUrl: String
+  primaryColor: String
+  secondaryColor: String
 }
 
 extend type Query {
@@ -100,9 +218,29 @@ type Mutation {
     
   deleteEventSession(id: ID!): Boolean 
     @field(resolver: "App\\GraphQL\\Mutations\\EventSessionMutation@delete")
-
+    
+  register(input: RegisterInput!): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@register")
+    
+  login(input: LoginInput!): AuthPayload!
+    @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@login")
+    
+  createSession(input: SessionInput!): EventSession!
+    @create(model: "App\\Models\\EventSession")
+    
+  registerToEvent(input: RegistrationInput!): Registration!
+    @guard(with: ["sanctum"])
+    @field(resolver: "App\\GraphQL\\Mutations\\RegistrationMutation@registerToEvent")
+    
+  checkIn(input: QRCheckInInput!): Attendance!
+    @guard(with: ["sanctum"])
+    @field(resolver: "App\\GraphQL\\Mutations\\AttendanceMutation@checkIn")
+    
+  sendNotification(input: NotificationInput!): [Notification!]!
+    @guard(with: ["sanctum"])
+    @field(resolver: "App\\GraphQL\\Mutations\\NotificationMutation@sendNotification")
+    
+  updateEventTheme(eventId: ID!, input: EventThemeInput!): Event!
+    @guard(with: ["sanctum"])
+    @field(resolver: "App\\GraphQL\\Mutations\\EventThemeMutation@updateEventTheme")
 }
-
-
-
-
