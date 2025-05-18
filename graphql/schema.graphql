@@ -49,6 +49,20 @@ type Event {
   updated_at: DateTime!
 }
 
+type EventSession {
+  id: ID!
+  title: String!
+  speaker: String
+  startTime: String!
+  endTime: String!
+  event: Event! @belongsTo
+}
+
+extend type Query {
+  eventSessions: [EventSession!]! @all(model: "App\\Models\\EventSession")
+  eventSession(id: ID!): EventSession @find(model: "App\\Models\\EventSession")
+}
+
 type Mutation {
   registerUser(name: String!, email: String!, password: String!, role: String): AuthPayload 
     @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@register")
@@ -76,7 +90,17 @@ type Mutation {
     @guard(with: ["sanctum"])
     @field(resolver: "App\\GraphQL\\Mutations\\EventMutation@deleteEvent")
 
-  
+  createEventSession(
+    title: String!
+    speaker: String
+    startTime: String!
+    endTime: String!
+    event_id: ID!
+  ):EventSession @create(model: "App\\Models\\EventSession")
+    
+  deleteEventSession(id: ID!): Boolean 
+    @field(resolver: "App\\GraphQL\\Mutations\\EventSessionMutation@delete")
+
 }
 
 
