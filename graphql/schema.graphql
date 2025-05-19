@@ -20,7 +20,7 @@ type Query {
 
     events: [Event!]! @all(model: "App\\Models\\Event")
     
-    me: User @auth
+    me: User @field(resolver: "App\\GraphQL\\Queries\\MeQuery")
     event(id: ID!): Event @field(resolver: "App\\GraphQL\\Queries\\EventQuery@event")
     registrations(eventId: ID!): [Registration!] @field(resolver: "App\\GraphQL\\Queries\\RegistrationQuery@registrations")
     stats(eventId: ID!): Stats @field(resolver: "App\\GraphQL\\Queries\\StatsQuery@stats")
@@ -218,15 +218,6 @@ type Mutation {
     
   deleteEventSession(id: ID!): Boolean 
     @field(resolver: "App\\GraphQL\\Mutations\\EventSessionMutation@delete")
-    
-  register(input: RegisterInput!): AuthPayload!
-    @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@register")
-    
-  login(input: LoginInput!): AuthPayload!
-    @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@login")
-    
-  createSession(input: SessionInput!): EventSession!
-    @create(model: "App\\Models\\EventSession")
     
   registerToEvent(input: RegistrationInput!): Registration!
     @guard(with: ["sanctum"])
