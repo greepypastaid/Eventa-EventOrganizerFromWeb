@@ -12,6 +12,13 @@ class Attendance extends Model
         'checked_in_at' => 'datetime',
     ];
 
+    // Tambahkan accessor untuk checkedInAt
+    public function getCheckedInAtAttribute($value)
+    {
+        // Jika nilai null, kembalikan waktu saat ini
+        return $value ?: now();
+    }
+
     public function participant()
     {
         return $this->belongsTo(User::class, 'user_id');

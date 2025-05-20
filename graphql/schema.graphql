@@ -93,7 +93,7 @@ type Attendance {
   id: ID!
   participant: User! @belongsTo(relation: "participant")
   session: EventSession! @belongsTo
-  checkedInAt: DateTime!
+  checkedInAt: DateTime
   created_at: DateTime!
 }
 
@@ -178,7 +178,6 @@ input EventThemeInput {
 
 extend type Query {
   eventSessions: [EventSession!]! @all(model: "App\\Models\\EventSession")
-  eventSession(id: ID!): EventSession @find(model: "App\\Models\\EventSession")
 }
 
 type Mutation {
