@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Attendance; // Tambahkan baris ini jika belum ada
 
 class EventSession extends Model
 {
@@ -17,5 +18,10 @@ class EventSession extends Model
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
     }
 }

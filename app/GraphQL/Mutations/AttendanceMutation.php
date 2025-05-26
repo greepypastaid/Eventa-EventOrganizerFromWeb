@@ -13,7 +13,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 class AttendanceMutation
 {
     public function checkIn($root, array $args)
-    {   // Uncomment the following lines if you want to restrict check-in to authenticated users
+    {   
+        // Uncomment the following lines if you want to restrict check-in to authenticated users
         
         if (!Auth::check()) {
             throw new AuthorizationException('Anda harus login untuk melakukan check-in.');
@@ -34,15 +35,15 @@ class AttendanceMutation
         
         Log::info('Mencoba check-in dengan QR Code: ' . $qrCode . ' dan Session ID: ' . $sessionId);
         
-        // Find the ticket by QR code
-        $ticket = Ticket::where('qrCode', $qrCode)->firstOrFail();
-        Log::info('Ticket ditemukan dengan ID: ' . $ticket->id);
-        
-        // Find the registration associated with this ticket
-        $registration = Registration::where('ticket_id', $ticket->id)->firstOrFail();
-        Log::info('Registration ditemukan dengan ID: ' . $registration->id . ' untuk event ID: ' . $registration->event_id);
-        
         try {
+            // Find the ticket by QR code
+            $ticket = Ticket::where('qrCode', $qrCode)->firstOrFail();
+            Log::info('Ticket ditemukan dengan ID: ' . $ticket->id);
+            
+            // Find the registration associated with this ticket
+            $registration = Registration::where('ticket_id', $ticket->id)->firstOrFail();
+            Log::info('Registration ditemukan dengan ID: ' . $registration->id . ' untuk event ID: ' . $registration->event_id);
+            
             // Find the session
             $session = EventSession::where('id', $sessionId)->first();
             
@@ -65,15 +66,51 @@ class AttendanceMutation
                 ->first();
                 
             if ($existingAttendance) {
-                throw new \Exception('Peserta sudah melakukan check-in untuk sesi ini.');
+                // If already checked in, return the existing attendance record
+                Log::info('Peserta sudah check-in untuk sesi ini. Mengembalikan record yang sudah ada.');
+
+                // Check if checked_in_at is null and update it if necessary
+                if (is_null($existingAttendance->checked_in_at)) {
+                    $existingAttendance->checked_in_at = now();
+                    $existingAttendance->save();
+                    // Refresh the model instance to get the updated data from the database
+                    $existingAttendance->refresh();
+                    Log::info('Updated checked_in_at for existing attendance: ' . $existingAttendance->checked_in_at);
+                }
+
+                return $existingAttendance;
             }
             
-            // Create attendance record
-            $attendance = Attendance::create([
-                'user_id' => $registration->user_id,
-                'event_session_id' => $session->id,
-                'checked_in_at' => now(),
-            ]);
+            // Buat objek Attendance baru dengan cara yang lebih eksplisit
+            $attendance = new Attendance();
+            $attendance->user_id = $registration->user_id;
+            $attendance->event_session_id = $session->id;
+            
+            // Set checked_in_at dengan nilai waktu saat ini yang eksplisit
+            $now = now();
+            $attendance->checked_in_at = $now;
+            
+            Log::info('Mencoba menyimpan attendance dengan checked_in_at: ' . $now);
+            
+            $attendance->save();
+            
+            // Refresh model untuk memastikan semua field diambil dengan benar
+            $attendance->refresh();
+            
+            Log::info('Check-in berhasil dengan checked_in_at: ' . $attendance->checked_in_at);
+            
+            // Verifikasi nilai checked_in_at setelah refresh
+            if (is_null($attendance->checked_in_at)) {
+                Log::warning('checked_in_at masih null setelah refresh! Mencoba update langsung...');
+                // Coba update langsung ke database
+                \DB::table('attendances')
+                    ->where('id', $attendance->id)
+                    ->update(['checked_in_at' => $now]);
+                
+                // Refresh lagi
+                $attendance->refresh();
+                Log::info('Setelah update langsung, checked_in_at: ' . $attendance->checked_in_at);
+            }
             
             // Mark registration as verified
             $registration->update(['verified' => true]);
