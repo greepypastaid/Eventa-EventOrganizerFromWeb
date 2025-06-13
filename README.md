@@ -1,186 +1,117 @@
-# Eventa-EO-Web-Based
+# Eventa - All in One Event Manager
 
-## Our Teams
-1. Gangsar Reka Pambudi (2304130130)
-2. Febriant Cahyo Nugroho (2304130097)
-3. Muhammad Dany Hidayat (2304130124)
-4. Faizal Rifky Abdilah (2304130128)
-5. Zulfa Mardlotillah (2304130135)
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![GraphQL](https://img.shields.io/badge/GraphQL-E10098?style=for-the-badge&logo=graphql&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
-## Project Description
-Eventa-EO-Web-Based is a web-based application that allows users to create and manage events. Users can create events, add participants, and track attendance.
+Eventa adalah platform manajemen event modern yang dibangun dengan Laravel sebagai backend dan React sebagai frontend. Proyek ini bertujuan untuk menyediakan solusi lengkap untuk membuat, mengelola, mempromosikan, dan menjual tiket event secara online.
 
-# Event Organizer Laravel Project
+## ✨ Fitur Utama (Rencana Pengembangan)
 
-This repository contains a Laravel-based web application for managing events.
+-   Landing page yang menarik.
+-   Pencarian dan penemuan event.
+-   Proses pembuatan event yang mudah.
+-   Manajemen tiket dan penjualan.
+-   Sistem pembayaran terintegrasi.
+-   Check-in peserta menggunakan QR Code.
+-   Dashboard admin untuk manajemen platform.
 
----
+## 🛠️ Stack Teknologi
 
-## Requirements
+-   **Backend**: Laravel 11
+-   **API**: GraphQL (via `lighthouse-php`)
+-   **Frontend**: React.js
+-   **Styling**: Tailwind CSS
+-   **Bundler**: Vite
+-   **Database**: MySQL / PostgreSQL
 
-- PHP 8.x
-- Composer
-- MySQL or other supported database
-- Node.js & npm (optional, if you use frontend assets)
+## 📂 Struktur Proyek
 
-## Setup Instructions
+Proyek ini mengikuti arsitektur standar Laravel dengan frontend React yang di-render sebagai Single Page Application (SPA).
 
-1. **Clone the repository**
--git clone https://github.com/yourusername/yourrepo.git
--cd yourrepo
+-   `/app`: Logika inti Laravel (Models, Controllers, Services).
+-   `/graphql`: Skema, resolver, dan tipe GraphQL Anda (`.graphql` files).
+-   `/database`: Migrations dan Seeders.
+-   `/routes`: Definisi rute API dan web.
+-   `/resources/js`: Seluruh kode sumber frontend React.
+    -   `/pages`: Komponen yang merepresentasikan satu halaman penuh (e.g., `HomePage.jsx`).
+    -   `/components`: Komponen UI yang dapat digunakan kembali (e.g., Buttons, Modals, Cards).
+        -   `/layout`: Komponen tata letak seperti `Navbar.jsx`, `Footer.jsx`.
+        -   `/home`: Komponen spesifik untuk `HomePage`.
+        -   `...folder lain sesuai fitur`.
+-   `/resources/views/app.blade.php`: File Blade tunggal yang menjadi "cangkang" untuk me-mount aplikasi React.
+-   `/public`: Aset publik dan titik masuk (`index.php`).
 
-3. **Install PHP dependencies**
-   
--composer install
+## 🚀 Instalasi & Setup
 
-5. **Copy environment file**
-   
--cp .env.example .env
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal Anda.
 
-7. **Configure .env**
-   
--"Edit .env and set your database credentials and other environment variables."
-DB_CONNECTION=mysql
+### Prasyarat
 
-DB_HOST=127.0.0.1
+-   PHP >= 8.2
+-   Composer
+-   Node.js >= 18.0
+-   NPM atau Yarn
+-   Database (e.g., MySQL, PostgreSQL)
 
-DB_PORT=3306
+### Langkah-langkah
 
-DB_DATABASE=your_database_name
+1.  **Clone repository:**
+    ```bash
+    git clone https://github.com/your-username/eventa-project.git
+    cd eventa-project
+    ```
 
-DB_USERNAME=root
+2.  **Install dependensi backend:**
+    ```bash
+    composer install
+    ```
 
-DB_PASSWORD=your_password
+3.  **Setup file environment:**
+    -   Salin file `.env.example` menjadi `.env`.
+        ```bash
+        cp .env.example .env
+        ```
+    -   Buat kunci aplikasi.
+        ```bash
+        php artisan key:generate
+        ```
 
-9. **Generate application key**
-    
--php artisan key:generate
+4.  **Konfigurasi `.env`:**
+    -   Buka file `.env` dan atur koneksi database Anda (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD).
+    -   Pastikan `APP_URL` sudah benar (e.g., `APP_URL=http://localhost`).
 
-11. **Run database migrations**
-    
--php artisan migrate
+5.  **Jalankan migrasi dan seeder database:**
+    ```bash
+    php artisan migrate --seed
+    ```
 
-13. **Run the application**
-    
--php artisan serve
+6.  **Install dependensi frontend:**
+    ```bash
+    npm install
+    ```
 
-## test what have been done(on graphql in postman)
-1. **user register**
-``
-mutation RegisterNewUser {
-  registerUser(
-    name: "Alex Johnson"
-    email: "alex.johnson@example.com"
-    password: "secure456"
-  ) {
-    token
-    user {
-      id
-      name
-      email
-    }
-  }
-}
-``
+## 🏃 Menjalankan Aplikasi
 
-2. **user login**
-   ``mutation {
-  loginUser(
-    email: "alex.johnson@example.com"
-    password: "secure456"
-  ) {
-    token
-    user {
-      id
-      name
-      email
-    }
-  }
-}
-``
+Anda perlu menjalankan dua server secara bersamaan di dua terminal terpisah.
 
-4. **change password**
-   ``mutation {
-  changePassword(
-    currentPassword: "secure456"
-    newPassword: "newsecure789"
-  )
-}
-``
-6. **create event**
-   ``mutation {
-  createEvent(
-    title: "LaravelConf 2025"
-    description: "Konferensi Laravel terbesar di Asia."
-    date: "2025-06-20T10:00:00"
-    location: "Jakarta Convention Center"
-  ) {
-    id
-    title
-    date
-  }
-}
-``
-*cuma contoh coba isi pake yang lain 
+1.  **Terminal 1: Jalankan server backend Laravel:**
+    ```bash
+    php artisan serve
+    ```
+    Server backend akan berjalan di `http://127.0.0.1:8000`.
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+2.  **Terminal 2: Jalankan server development Vite untuk frontend:**
+    ```bash
+    npm run dev
+    ```
+    Vite akan meng-compile aset frontend dan menyediakan Hot Module Replacement (HMR).
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+3.  **Akses Aplikasi:**
+    -   Buka browser Anda dan kunjungi **`http://127.0.0.1:8000`**. Ini adalah alamat aplikasi utama Anda.
 
-## About Laravel
+## 🤝 Kontribusi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Kami menyambut kontribusi! Silakan buat *fork* dari repository ini, buat *feature branch* baru, dan kirimkan *Pull Request*.
