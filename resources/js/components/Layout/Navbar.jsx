@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
 
 const Logo = () => (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
@@ -9,29 +10,54 @@ const Logo = () => (
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navLinks = ["Home", "Events", "Concerts", "About Us"];
+  const navLinks = [
+    { name: "Home", route: "home" },
+    { name: "Events", route: "events" },
+    { name: "Concerts", route: "concerts" },
+    { name: "About Us", route: "about" }
+  ];
 
   return (
     <>
       <div className="bg-white/20 backdrop-blur-lg rounded-2xl p-4 flex justify-between items-center text-white">
-        <a href="#" className="flex items-center space-x-3">
+        <Link href={route('home')} className="flex items-center space-x-3">
             <Logo />
             <span className="text-2xl font-bold">Eventa</span>
-        </a>
+        </Link>
 
         <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-            <a key={link} href="#" className={`pb-1 transition-colors duration-300 ${link === 'Home' ? 'border-b-2 border-white font-semibold' : 'text-gray-200 hover:text-white'}`}>
-                {link}
-            </a>
+            <Link 
+              key={link.name} 
+              href={route(link.route)} 
+              className={`pb-1 transition-colors duration-300 ${link.name === 'Home' ? 'border-b-2 border-white font-semibold' : 'text-gray-200 hover:text-white'}`}
+            >
+                {link.name}
+            </Link>
             ))}
         </div>
 
         <div className="hidden md:flex items-center space-x-4">
-            <a href="#" className="text-gray-200 hover:text-white transition-colors px-3 py-2">Login</a>
-            <a href="#" className="bg-white text-indigo-700 px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors duration-300 shadow-sm">
+            <Link 
+              href={route('login')} 
+              className="text-gray-200 hover:text-white transition-colors px-3 py-2"
+              onClick={(e) => {
+                e.preventDefault();
+                document.dispatchEvent(new CustomEvent('open-login-modal'));
+              }}
+            >
+              Login
+            </Link>
+            <Link 
+              href={route('register')} 
+              className="bg-white text-indigo-700 px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors duration-300 shadow-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                document.dispatchEvent(new CustomEvent('open-register-modal'));
+              }}
+            >
               Sign Up
-            </a>
+            </Link>
         </div>
         
         <div className="md:hidden">
@@ -45,13 +71,37 @@ function Navbar() {
           <div className="md:hidden mt-2 bg-white/20 backdrop-blur-lg rounded-2xl p-4">
               <div className="flex flex-col space-y-4 text-center">
               {navLinks.map((link) => (
-                  <a key={link} href="#" className="py-2 text-gray-200 hover:text-white">{link}</a>
+                  <Link 
+                    key={link.name} 
+                    href={route(link.route)} 
+                    className="py-2 text-gray-200 hover:text-white"
+                  >
+                    {link.name}
+                  </Link>
               ))}
               <hr className="border-white/20"/>
-              <a href="#" className="py-2 text-gray-200 hover:text-white">Login</a>
-              <a href="#" className="bg-white text-indigo-700 block w-full py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                  Sign Up
-              </a>
+              <Link 
+                href={route('login')} 
+                className="py-2 text-gray-200 hover:text-white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  document.dispatchEvent(new CustomEvent('open-login-modal'));
+                }}
+              >
+                Login
+              </Link>
+              <Link 
+                href={route('register')} 
+                className="bg-white text-indigo-700 block w-full py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  document.dispatchEvent(new CustomEvent('open-register-modal'));
+                }}
+              >
+                Sign Up
+              </Link>
               </div>
           </div>
       )}

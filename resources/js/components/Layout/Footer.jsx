@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 
-function Footer() {
+export default function Footer() {
   return (
-    <footer className="bg-indigo-800 text-white">
+    <footer className="bg-indigo-600 text-white">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           
@@ -60,6 +61,4 @@ function Footer() {
       </div>
     </footer>
   );
-}
-
-export default Footer; 
+} 
