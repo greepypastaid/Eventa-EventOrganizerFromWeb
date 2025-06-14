@@ -22,7 +22,13 @@ export default function LoginForm({ status, canResetPassword, onClose }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('login'));
+        post(route('login'), {
+            onSuccess: () => {
+                if (onClose) {
+                    onClose();
+                }
+            },
+        });
     };
 
     return (

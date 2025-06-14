@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -9,7 +10,17 @@ class PageController extends Controller
 {
     public function home()
     {
-        return Inertia::render('HomePage');
+        // Get hero event and recent events for homepage
+        $heroEvent = Event::where('is_hero', true)->first();
+        $recentEvents = Event::where('is_hero', false)
+                            ->orderBy('date', 'asc')
+                            ->limit(4)
+                            ->get();
+                            
+        return Inertia::render('HomePage', [
+            'heroEvent' => $heroEvent,
+            'recentEvents' => $recentEvents
+        ]);
     }
 
     public function about()
@@ -19,20 +30,35 @@ class PageController extends Controller
 
     public function events()
     {
-        return Inertia::render('EventsPage');
+        // Get all regular events
+        $events = Event::where('event_type', 'regular')
+                      ->orderBy('date', 'asc')
+                      ->get();
+                      
+        return Inertia::render('EventsPage', [
+            'events' => $events
+        ]);
     }
 
     public function concerts()
     {
-        return Inertia::render('ConcertsPage');
+        // Get all concert events
+        $concerts = Event::where('event_type', 'concert')
+                        ->orderBy('date', 'asc')
+                        ->get();
+                        
+        return Inertia::render('ConcertsPage', [
+            'concerts' => $concerts
+        ]);
     }
 
     public function eventDetail($id)
     {
-        // In a real application, you would fetch the event from the database
-        // For now, we'll just pass the ID to the front-end
+        // Get the event from the database
+        $event = Event::findOrFail($id);
+        
         return Inertia::render('EventDetailPage', [
-            'eventId' => $id
+            'event' => $event
         ]);
     }
 }

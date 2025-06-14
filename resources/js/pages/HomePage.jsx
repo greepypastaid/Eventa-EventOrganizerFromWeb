@@ -8,8 +8,8 @@ import Footer from '../components/layout/Footer';
 import Testimonials from '../components/home/Testimonials';
 import HowItWorks from '../components/home/HowItWorks';
 
-export default function HomePage() {
-  const { auth } = usePage().props;
+export default function HomePage(props) {
+  const { auth, heroEvent, recentEvents } = props;
   const Layout = auth.user ? AuthenticatedLayout : GuestLayout;
 
   return (
@@ -17,9 +17,9 @@ export default function HomePage() {
       <Head title="Home" />
 
       <div>
-        <Hero />
+        <Hero event={heroEvent} />
         <div className="bg-white">
-          <EventList />
+          <EventList events={recentEvents} />
           <HowItWorks />
           <Testimonials />
           <CTA />
