@@ -44,9 +44,11 @@ export default function MainNavbar({ auth }) {
                     {/* Logo */}
                     <div className="flex items-center">
                         <Link href={route('home')} className={`flex items-center ${isScrolled || needsDarkerText ? 'text-indigo-700' : 'text-white'}`}>
-                            <svg className="w-6 h-6 sm:w-8 sm:h-8 mr-1 sm:mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 19H20L12 5L4 19Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            <img 
+                                src="/images/logo.png" 
+                                alt="Eventa Logo" 
+                                className="w-8 h-8 sm:w-10 sm:h-10 mr-1 sm:mr-2 object-contain"
+                            />
                             <span className="text-xl sm:text-2xl font-bold">Eventa</span>
                         </Link>
                     </div>

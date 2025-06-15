@@ -54,12 +54,12 @@ const CountdownTimer = ({ targetDate }) => {
       try {
         // Get current date
         const now = new Date();
-        
-        // Parse target date string to ensure consistency
-        const target = new Date(targetDate);
+        console.log('Current time:', now);
+        console.log('Target time:', targetDate);
         
         // Calculate difference in milliseconds
-        const difference = target - now;
+        const difference = targetDate - now;
+        console.log('Time difference in days:', difference / (1000 * 60 * 60 * 24));
         
         // Return all zeros if the date has passed
         if (difference <= 0) {
@@ -319,8 +319,30 @@ export default function EventDetailPage({ event }) {
   // Format the date for display
   const formattedDate = event.date ? format(new Date(event.date), 'eeee, d MMMM yyyy') : 'Date not set';
   
-  // Create a fixed target date for the countdown - June 17, 2025
-  const targetDate = "2025-06-17T00:00:00";
+  // Create target date from event date and time
+  const createTargetDate = () => {
+    if (!event.date) return null;
+    
+    try {
+      // Parse the event date directly since it's already in 2025
+      const dateObj = new Date(event.date);
+      
+      // If we have time, add it to the date
+      if (event.time) {
+        const timeOnly = event.time.split('T')[1].split('.')[0]; // Get HH:MM:SS
+        const [hours, minutes] = timeOnly.split(':');
+        dateObj.setHours(parseInt(hours, 10));
+        dateObj.setMinutes(parseInt(minutes, 10));
+      }
+
+      return dateObj;
+    } catch (error) {
+      console.error("Error creating target date:", error);
+      return null;
+    }
+  };
+
+  const targetDate = createTargetDate();
   
   return (
     <Layout user={auth.user}>
@@ -345,7 +367,7 @@ export default function EventDetailPage({ event }) {
               <p className="text-lg text-gray-200 mb-8">{formattedDate} at {event.location}</p>
               
               {/* Real-time Countdown Timer */}
-              <CountdownTimer targetDate={targetDate} />
+              {targetDate && <CountdownTimer targetDate={targetDate} />}
               
               {!registration && auth.user && (
                 <button 
