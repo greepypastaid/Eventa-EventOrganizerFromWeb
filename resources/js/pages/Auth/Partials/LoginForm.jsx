@@ -22,7 +22,13 @@ export default function LoginForm({ status, canResetPassword, onClose }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('login'));
+        post(route('login'), {
+            onSuccess: () => {
+                if (onClose) {
+                    onClose();
+                }
+            },
+        });
     };
 
     return (
@@ -45,7 +51,7 @@ export default function LoginForm({ status, canResetPassword, onClose }) {
                     <InputLabel htmlFor="email" value="Email or username" />
                     <TextInput
                         id="email"
-                        type="email"
+                        type="text"
                         name="email"
                         value={data.email}
                         className="mt-1 block w-full"

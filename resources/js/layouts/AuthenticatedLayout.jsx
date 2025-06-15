@@ -5,7 +5,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const auth = usePage().props.auth;
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50">
             {/* Main Navigation Bar */}
             <MainNavbar auth={auth} />
 

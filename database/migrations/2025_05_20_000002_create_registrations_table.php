@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
+            $table->string('registration_code')->unique();
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
             $table->boolean('verified')->default(false);
+            $table->timestamp('checked_in_at')->nullable();
             $table->json('custom_fields')->nullable();
             $table->timestamps();
         });

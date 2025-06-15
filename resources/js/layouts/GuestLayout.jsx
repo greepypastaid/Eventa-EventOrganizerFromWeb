@@ -49,7 +49,7 @@ export default function GuestLayout({ children, canResetPassword }) {
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50">
             {/* Main Navigation Bar */}
             <MainNavbar auth={null} />
 
