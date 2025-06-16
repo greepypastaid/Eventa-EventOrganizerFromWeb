@@ -189,9 +189,8 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                {isAdmin ? "Event Organizer Dashboard" : "My Events Dashboard"}
-            </h2>}
+            header={<div className="h-16 bg-transparent"></div>}
+            headerClassName="bg-transparent shadow-none"
         >
             <Head title="Dashboard" />
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
+import axios from 'axios';
 
 const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
@@ -15,32 +16,81 @@ function Hero({ event }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = () => {
+  // List of months for date filter
+  const months = [
+    { value: '01', label: 'Januari' },
+    { value: '02', label: 'Februari' },
+    { value: '03', label: 'Maret' },
+    { value: '04', label: 'April' },
+    { value: '05', label: 'Mei' },
+    { value: '06', label: 'Juni' },
+    { value: '07', label: 'Juli' },
+    { value: '08', label: 'Agustus' },
+    { value: '09', label: 'September' },
+    { value: '10', label: 'Oktober' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'Desember' },
+  ];
+
+  // List of locations
+  const locations = [
+    { value: 'Yogyakarta', label: 'Yogyakarta' },
+    { value: 'Jakarta', label: 'Jakarta' },
+    { value: 'Semarang', label: 'Semarang' },
+    { value: 'Bandung', label: 'Bandung' },
+    { value: 'Surabaya', label: 'Surabaya' },
+    { value: 'Online', label: 'Online' },
+  ];
+
+  // Event categories
+  const categories = [
+    { value: 'regular', label: 'Regular' },
+    { value: 'concert', label: 'Concert' },
+  ];
+
+  const handleSearch = async () => {
     setIsSearching(true);
+    setIsLoading(true);
     setShowMobileFilters(false);
     
-    // This search is now client-side only and uses dummy data.
-    // For a real application, this would trigger a backend search.
-    // For now, we will just filter the dummy sampleEvents array.
-    const results = (event ? [event] : []).filter(e => {
-      const matchesQuery = searchQuery === '' || 
-        e.title.toLowerCase().includes(searchQuery.toLowerCase());
+    try {
+      // Call API to search events
+      const response = await axios.get('/api/events/search', {
+        params: {
+          query: searchQuery,
+          date: selectedDate,
+          location: selectedLocation,
+          category: selectedCategory,
+        }
+      });
       
-      const matchesDate = selectedDate === '' || 
-        (e.date && format(new Date(e.date), 'MMMM yyyy').toLowerCase().includes(selectedDate.toLowerCase()));
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error('Error searching events:', error);
+      // Fallback to client-side filtering if API call fails
+      const allEvents = event ? [event] : [];
+      const results = allEvents.filter(e => {
+        const matchesQuery = searchQuery === '' || 
+          e.title.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesDate = selectedDate === '' || 
+          (e.date && e.date.includes(selectedDate));
+        
+        const matchesLocation = selectedLocation === '' || 
+          e.location?.toLowerCase().includes(selectedLocation.toLowerCase());
+        
+        const matchesCategory = selectedCategory === '' || 
+          e.event_type?.toLowerCase() === selectedCategory.toLowerCase();
+        
+        return matchesQuery && matchesDate && matchesLocation && matchesCategory;
+      });
       
-      const matchesLocation = selectedLocation === '' || 
-        e.location.toLowerCase().includes(selectedLocation.toLowerCase());
-      
-      // Category is not part of the event model yet, so we'll skip it
-      // const matchesCategory = selectedCategory === '' || 
-      //   e.category.toLowerCase() === selectedCategory.toLowerCase();
-      
-      return matchesQuery && matchesDate && matchesLocation;
-    });
-    
-    setSearchResults(results);
+      setSearchResults(results);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const heroImage = event?.photo_url || "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop";
@@ -106,11 +156,9 @@ function Hero({ event }) {
                               onChange={(e) => setSelectedDate(e.target.value)}
                           >
                               <option value="">Choose</option>
-                              <option value="April">April 2025</option>
-                              <option value="June">June 2025</option>
-                              <option value="October">October 2025</option>
-                              <option value="November">November 2025</option>
-                              <option value="December">December 2025</option>
+                              {months.map((month) => (
+                                <option key={month.value} value={month.value}>{month.label}</option>
+                              ))}
                           </select>
                       </div>
                   </div>
@@ -124,9 +172,9 @@ function Hero({ event }) {
                               onChange={(e) => setSelectedLocation(e.target.value)}
                           >
                               <option value="">Choose</option>
-                              <option value="Semarang">Semarang</option>
-                              <option value="Jakarta">Jakarta</option>
-                              <option value="Online">Online</option>
+                              {locations.map((location) => (
+                                <option key={location.value} value={location.value}>{location.label}</option>
+                              ))}
                           </select>
                       </div>
                   </div>
@@ -140,10 +188,9 @@ function Hero({ event }) {
                               onChange={(e) => setSelectedCategory(e.target.value)}
                           >
                               <option value="">Choose</option>
-                              <option value="Music">Music</option>
-                              <option value="Technology">Technology</option>
-                              <option value="Business">Business</option>
-                              <option value="Sports">Sports</option>
+                              {categories.map((category) => (
+                                <option key={category.value} value={category.value}>{category.label}</option>
+                              ))}
                           </select>
                       </div>
                   </div>
@@ -196,11 +243,9 @@ function Hero({ event }) {
                       onChange={(e) => setSelectedDate(e.target.value)}
                     >
                       <option value="">Any</option>
-                      <option value="April">April</option>
-                      <option value="June">June</option>
-                      <option value="October">Oct</option>
-                      <option value="November">Nov</option>
-                      <option value="December">Dec</option>
+                      {months.map((month) => (
+                        <option key={month.value} value={month.value}>{month.label}</option>
+                      ))}
                     </select>
                   </div>
                   
@@ -212,9 +257,9 @@ function Hero({ event }) {
                       onChange={(e) => setSelectedLocation(e.target.value)}
                     >
                       <option value="">Any</option>
-                      <option value="Semarang">Semarang</option>
-                      <option value="Jakarta">Jakarta</option>
-                      <option value="Online">Online</option>
+                      {locations.map((location) => (
+                        <option key={location.value} value={location.value}>{location.label}</option>
+                      ))}
                     </select>
                   </div>
                   
@@ -226,10 +271,9 @@ function Hero({ event }) {
                       onChange={(e) => setSelectedCategory(e.target.value)}
                     >
                       <option value="">Any</option>
-                      <option value="Music">Music</option>
-                      <option value="Technology">Tech</option>
-                      <option value="Business">Business</option>
-                      <option value="Sports">Sports</option>
+                      {categories.map((category) => (
+                        <option key={category.value} value={category.value}>{category.label}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -244,7 +288,12 @@ function Hero({ event }) {
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Search Results</h2>
               
-              {searchResults.length === 0 ? (
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+                  <p className="mt-2 text-gray-600">Searching...</p>
+                </div>
+              ) : searchResults.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No events match your criteria.</p>
                   <button 
@@ -259,15 +308,22 @@ function Hero({ event }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {searchResults.map(event => (
                       <div key={event.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                        <img src={event.image} alt={event.title} className="w-full h-40 sm:h-48 object-cover" />
+                        {event.photo_url && (
+                          <img src={event.photo_url} alt={event.title} className="w-full h-40 sm:h-48 object-cover" />
+                        )}
                         <div className="p-3 sm:p-4">
                           <span className="inline-block px-2 sm:px-3 py-1 text-xs font-semibold bg-indigo-100 text-indigo-800 rounded-full mb-2">
-                            {event.category}
+                            {event.event_type || 'Event'}
                           </span>
                           <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-1">{event.title}</h3>
-                          <p className="text-gray-600 text-xs sm:text-sm mb-1">{event.date}</p>
+                          <p className="text-gray-600 text-xs sm:text-sm mb-1">
+                            {event.date && format(new Date(event.date), 'dd MMMM yyyy')}
+                          </p>
                           <p className="text-gray-600 text-xs sm:text-sm">{event.location}</p>
-                          <Link href="#" className="mt-2 sm:mt-3 inline-block text-indigo-600 text-sm sm:text-base font-medium hover:text-indigo-800">
+                          <Link 
+                            href={route('events.detail', event.id)} 
+                            className="mt-2 sm:mt-3 inline-block text-indigo-600 text-sm sm:text-base font-medium hover:text-indigo-800"
+                          >
                             View Details
                           </Link>
                         </div>

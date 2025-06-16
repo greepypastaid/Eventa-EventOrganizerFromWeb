@@ -80,7 +80,8 @@ export default function AnalyticsPage({ auth, events = [], dailyRegistrations = 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Event Analytics</h2>}
+            header={<div className="h-16 bg-transparent"></div>}
+            headerClassName="bg-transparent shadow-none"
         >
             <Head title="Analytics" />
 

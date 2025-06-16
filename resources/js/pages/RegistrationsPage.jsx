@@ -102,7 +102,8 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Manage Registrations</h2>}
+            header={<div className="h-16 bg-transparent"></div>}
+            headerClassName="bg-transparent shadow-none"
         >
             <Head title="Registrations" />
 

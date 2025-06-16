@@ -74,7 +74,8 @@ export default function CheckInPage({ auth, events = [] }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">QR Code Check-In</h2>}
+            header={<div className="h-16 bg-transparent"></div>}
+            headerClassName="bg-transparent shadow-none"
         >
             <Head title="QR Check-In" />
 

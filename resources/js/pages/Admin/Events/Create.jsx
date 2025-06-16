@@ -65,7 +65,8 @@ export default function Create({ auth }) {
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Create New Event</h2>}
+            header={<div className="h-16 bg-transparent"></div>}
+            headerClassName="bg-transparent shadow-none"
         >
             <Head title="Create New Event" />
 
