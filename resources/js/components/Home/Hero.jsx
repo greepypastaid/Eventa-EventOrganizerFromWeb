@@ -124,7 +124,7 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
                   {event ? (
                     <>
                       <p className="font-semibold mb-2 tracking-wider">Upcoming {event.event_type === 'concert' ? 'Concert' : 'Event'}!</p>
-                      <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-tight">{heroTitle}</h1>
+                      <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 leading-tight">{heroTitle}</h1>
                       <p className="text-base sm:text-lg text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
                       <Link href={route('events.detail', event.id)} className="group inline-flex items-center gap-2 sm:gap-3 bg-transparent border-2 border-white px-6 sm:px-8 py-2 sm:py-3 rounded-xl font-semibold hover:bg-white hover:text-indigo-700 transition-all duration-300">
                       Book Now!
@@ -136,7 +136,7 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
                     </>
                   ) : (
                     <>
-                      <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-tight">{heroTitle}</h1>
+                      <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 leading-tight">{heroTitle}</h1>
                       <p className="text-base sm:text-lg text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
                     </>
                   )}

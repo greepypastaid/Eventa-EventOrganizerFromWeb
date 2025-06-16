@@ -17,6 +17,13 @@ class RegistrationController extends Controller
      */
     public function register(Request $request, $eventId)
     {
+        // Check if user is admin and block registration
+        if (Auth::user()->role === 'admin') {
+            return response()->json([
+                'message' => 'Admins are not allowed to register for events.',
+            ], 403);
+        }
+    
         // Validate the request
         $validated = $request->validate([
             'name' => 'required|string|max:255',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { QrReader } from 'react-qr-reader';
@@ -10,6 +10,31 @@ export default function CheckInPage({ auth, events = [] }) {
     const [attendee, setAttendee] = useState(null);
     const [loading, setLoading] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState('');
+    const [autoResetTimeout, setAutoResetTimeout] = useState(null);
+    
+    // Auto-reset the check-in form after success
+    useEffect(() => {
+        if (attendee) {
+            // Clear any existing timeout
+            if (autoResetTimeout) {
+                clearTimeout(autoResetTimeout);
+            }
+            
+            // Set new timeout to auto-reset after 2 seconds
+            const timeout = setTimeout(() => {
+                handleReset();
+            }, 2000);
+            
+            setAutoResetTimeout(timeout);
+        }
+        
+        // Clean up timeout on component unmount
+        return () => {
+            if (autoResetTimeout) {
+                clearTimeout(autoResetTimeout);
+            }
+        };
+    }, [attendee]);
     
     const handleScan = (result, error) => {
         if (!!result) {
@@ -69,6 +94,27 @@ export default function CheckInPage({ auth, events = [] }) {
         setScanResult(null);
         setScanError(null);
         setAttendee(null);
+    };
+
+    // Countdown timer for auto-reset
+    const AutoResetCountdown = ({ seconds }) => {
+        const [countdown, setCountdown] = useState(seconds);
+        
+        useEffect(() => {
+            if (countdown > 0) {
+                const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+                return () => clearTimeout(timer);
+            }
+        }, [countdown]);
+        
+        return (
+            <div className="flex items-center">
+                <div className="flex items-center justify-center bg-green-100 rounded-full w-6 h-6 mr-2">
+                    <span className="text-sm font-medium text-green-800">{countdown}</span>
+                </div>
+                <span className="text-sm text-gray-600">Auto-scanning next attendee in {countdown} {countdown === 1 ? 'second' : 'seconds'}</span>
+            </div>
+        );
     };
     
     return (
@@ -217,12 +263,11 @@ export default function CheckInPage({ auth, events = [] }) {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <button 
-                                                    onClick={handleReset}
-                                                    className={`mt-4 text-sm font-medium ${scanError ? 'text-yellow-600 hover:text-yellow-500' : 'text-green-600 hover:text-green-500'}`}
-                                                >
-                                                    Check in Another Attendee
-                                                </button>
+                                                
+                                                <div className="mt-3">
+                                                    <AutoResetCountdown seconds={2} />
+                                                    <p className="text-sm text-gray-500 mt-1">Scanner will automatically reset...</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

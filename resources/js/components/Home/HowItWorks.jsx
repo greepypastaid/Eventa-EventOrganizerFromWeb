@@ -24,7 +24,7 @@ const steps = [
   {
     id: 3,
     title: 'Attend & Enjoy',
-    description: 'Receive your tickets via email, show them at the venue, and enjoy an unforgettable experience at your chosen event.',
+    description: 'Activate your tickets via QR Code, show them at the venue, and enjoy an unforgettable experience at your chosen event.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

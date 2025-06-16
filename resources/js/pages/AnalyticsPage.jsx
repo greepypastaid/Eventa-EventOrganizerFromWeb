@@ -194,7 +194,7 @@ export default function AnalyticsPage({ auth, events = [], dailyRegistrations = 
                                 
                                 {/* Export Options */}
                                 <div className="mt-8 flex justify-end">
-                                    <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 mr-3">
+                                    <button className="bg-indigo-100 border border-indigo-300 text-indigo-700 px-4 py-2 rounded-md hover:bg-indigo-200 mr-3">
                                         Export CSV
                                     </button>
                                     <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
