@@ -66,8 +66,7 @@ export default function Edit({ auth, event }) {
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={<div className="h-16 bg-transparent"></div>}
-            headerClassName="bg-transparent shadow-none"
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Event: {event.title}</h2>}
         >
             <Head title="Edit Event" />
 

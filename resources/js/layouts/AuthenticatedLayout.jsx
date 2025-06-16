@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import MainNavbar from '@/Components/MainNavbar';
 
-export default function AuthenticatedLayout({ header, children, headerClassName }) {
+export default function AuthenticatedLayout({ header, children }) {
     const auth = usePage().props.auth;
 
     return (
@@ -10,7 +10,7 @@ export default function AuthenticatedLayout({ header, children, headerClassName 
             <MainNavbar auth={auth} />
 
             {header && (
-                <header className={headerClassName || "bg-white shadow"}>
+                <header className="bg-white shadow">
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {header}
                     </div>

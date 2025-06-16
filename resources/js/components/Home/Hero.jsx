@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
-import axios from 'axios';
 
 const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
@@ -16,14 +15,12 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Get unique locations from events
   const uniqueLocations = [...new Set(allEvents.map(event => event.location))].filter(Boolean);
 
   const handleSearch = () => {
     setIsSearching(true);
-    setIsLoading(true);
     setShowMobileFilters(false);
     
     // Search through all events
@@ -246,12 +243,7 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Search Results</h2>
               
-              {isLoading ? (
-                <div className="text-center py-8">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
-                  <p className="mt-2 text-gray-600">Searching...</p>
-                </div>
-              ) : searchResults.length === 0 ? (
+              {searchResults.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No events match your criteria.</p>
                   <button 
