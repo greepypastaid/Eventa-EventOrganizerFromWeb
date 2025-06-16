@@ -3,13 +3,35 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import CreateEventModal from './Admin/Events/CreateEventModal';
 import { QRCodeSVG } from 'qrcode.react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+
+// Format time function to handle ISO time strings
+const formatTime = (timeString) => {
+    if (!timeString) return '00:00';
+    
+    try {
+        // Handle ISO format time strings
+        if (timeString.includes('T')) {
+            const date = parseISO(timeString);
+            return format(date, 'HH:mm');
+        }
+        
+        // Handle simple time strings
+        return timeString;
+    } catch (error) {
+        console.error("Error formatting time:", error);
+        return '00:00';
+    }
+};
 
 // Ticket component that can be printed
 const PrintableTicket = ({ registration, event, onClose }) => {
     // Use the actual registration code from the backend
     const ticketCode = registration?.registration_code || `EVT-INVALID`;
     const attendeeName = registration?.custom_fields?.name || registration?.user?.name || 'N/A';
+    
+    // Format the time for ticket display
+    const formattedTime = formatTime(event.time);
     
     const handlePrint = () => {
         // First capture the SVG QR code
@@ -152,7 +174,7 @@ const PrintableTicket = ({ registration, event, onClose }) => {
                     <div class="ticket">
                         <div class="ticket-header">
                             <h1>${event.title}</h1>
-                            <p>${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${event.time || '00:00'}</p>
+                            <p>${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${formattedTime}</p>
                             <div class="ticket-venue">
                                 <p><strong>Location:</strong> ${event.location}</p>
                                 <p><strong>Organizer:</strong> ${event.organizer}</p>
@@ -195,7 +217,7 @@ const PrintableTicket = ({ registration, event, onClose }) => {
                         <h4 className="font-bold text-indigo-700">{event ? event.title : 'Event'}</h4>
                         <p className="text-sm text-gray-600">
                             {event && event.date 
-                                ? `${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${event.time || '00:00'}`
+                                ? `${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${formattedTime}`
                                 : 'Date not available'
                             }
                         </p>

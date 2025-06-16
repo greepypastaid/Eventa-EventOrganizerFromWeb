@@ -5,7 +5,7 @@ import { Head, usePage, Link } from '@inertiajs/react';
 import axios from 'axios';
 import Footer from '@/components/layout/Footer';
 import { QRCodeSVG } from 'qrcode.react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import MainNavbar from '@/Components/MainNavbar';
 
 // Icons
@@ -212,11 +212,33 @@ const RegistrationForm = ({ eventId, onRegister, eventTitle }) => {
 const EventTicket = ({ registration, event }) => {
   const ticketCode = `EVENTA-${registration.id}-${event.id}`;
   
+  // Format the time for ticket display
+  const formatTicketTime = (timeString) => {
+    if (!timeString) return '00:00';
+    
+    try {
+      // Handle ISO format time strings
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, 'HH:mm');
+      }
+      
+      // Handle simple time strings
+      return timeString;
+    } catch (error) {
+      console.error("Error formatting time for ticket:", error);
+      return '00:00';
+    }
+  };
+  
+  const formattedDate = event.date ? format(new Date(event.date), 'eeee, d MMMM yyyy') : 'Date not set';
+  const formattedTime = formatTicketTime(event.time);
+  
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 max-w-md mx-auto">
       <div className="text-center mb-4">
         <h3 className="text-xl font-bold">{event.title}</h3>
-        <p className="text-gray-600">{event.date} • {event.time}</p>
+        <p className="text-gray-600">{formattedDate} • {formattedTime}</p>
       </div>
       
       <div className="border-t border-b border-gray-200 py-4 my-4">
@@ -348,20 +370,62 @@ export default function EventDetailPage({ event }) {
   // Format the date for display
   const formattedDate = event.date ? format(new Date(event.date), 'eeee, d MMMM yyyy') : 'Date not set';
   
+  // Format the time for display
+  const formatTime = (timeString) => {
+    if (!timeString) return 'Time not set';
+    
+    try {
+      // Handle ISO format time strings
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, 'HH:mm');
+      }
+      
+      // Handle simple time strings
+      return timeString;
+    } catch (error) {
+      console.error("Error formatting time:", error);
+      return 'Time not set';
+    }
+  };
+  
+  const formattedTime = formatTime(event.time);
+  
+  // Calculate event duration (if start_time and end_time are available)
+  const getEventDuration = () => {
+    if (event.start_time && event.end_time) {
+      const startTime = formatTime(event.start_time);
+      const endTime = formatTime(event.end_time);
+      return `${startTime} - ${endTime}`;
+    } else if (event.time) {
+      return formattedTime;
+    }
+    return 'Time not specified';
+  };
+  
   // Create target date from event date and time
   const createTargetDate = () => {
     if (!event.date) return null;
     
     try {
-      // Parse the event date directly since it's already in 2025
+      // Parse the event date
       const dateObj = new Date(event.date);
       
       // If we have time, add it to the date
       if (event.time) {
-        const timeOnly = event.time.split('T')[1].split('.')[0]; // Get HH:MM:SS
-        const [hours, minutes] = timeOnly.split(':');
-        dateObj.setHours(parseInt(hours, 10));
-        dateObj.setMinutes(parseInt(minutes, 10));
+        let timeOnly;
+        
+        // Handle ISO format time strings
+        if (event.time.includes('T')) {
+          const timeParts = event.time.split('T')[1].split('.')[0].split(':'); // Get HH:MM:SS
+          dateObj.setHours(parseInt(timeParts[0], 10));
+          dateObj.setMinutes(parseInt(timeParts[1], 10));
+        } else {
+          // Handle simple time format
+          const timeParts = event.time.split(':');
+          dateObj.setHours(parseInt(timeParts[0], 10));
+          dateObj.setMinutes(parseInt(timeParts[1], 10));
+        }
       }
 
       return dateObj;
@@ -713,7 +777,23 @@ export default function EventDetailPage({ event }) {
                   </div>
                   <div>
                       <h3 className="text-xl font-semibold text-indigo-600 mb-2">When</h3>
-                      <p className="text-gray-600">{formattedDate} at {event.time ? event.time : '00:00'}</p>
+                      <p className="text-gray-600">{formattedDate}</p>
+                      <p className="text-gray-600 mt-1">Time: {getEventDuration()}</p>
+                  </div>
+                </div>
+                
+                {/* Session/Duration */}
+                <div className="flex items-start">
+                  <div className="text-indigo-600 mr-4">
+                    <ClockIcon />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-indigo-600 mb-2">Session</h3>
+                    <p className="text-gray-600">
+                      {event.session_details || event.duration 
+                        ? `${event.session_details || ''} ${event.duration ? `(${event.duration})` : ''}` 
+                        : 'Session details not available'}
+                    </p>
                   </div>
                 </div>
                 
@@ -728,7 +808,7 @@ export default function EventDetailPage({ event }) {
                   </div>
                 </div>
                 
-                {/* Guest Stars */}
+                {/* Organizer */}
                 <div className="flex items-start">
                   <div className="text-indigo-600 mr-4">
                     <PeopleIcon />
@@ -811,9 +891,9 @@ export default function EventDetailPage({ event }) {
                 {/* Schedule data is not available in the event model yet. This is a placeholder. */}
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                   <p className="text-gray-500">No detailed schedule has been provided for this event yet. Please check back later!</p>
-          </div>
-        </div>
-      </div>
+                </div>
+              </div>
+            </div>
           )}
           
           {/* Ticket Tab */}
@@ -830,7 +910,7 @@ export default function EventDetailPage({ event }) {
                   Contact Support
                 </Link>
               </div>
-          </div>
+            </div>
           )}
         </div>
       </div>

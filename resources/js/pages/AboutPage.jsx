@@ -55,7 +55,7 @@ export default function AboutPage() {
                                 About <span className="text-indigo-600">Eventa</span>
                             </h1>
                             <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-                                Connecting people with unforgettable experiences since 2023
+                                Connecting people with unforgettable experiences since 2025
                             </p>
                         </div>
                     </div>

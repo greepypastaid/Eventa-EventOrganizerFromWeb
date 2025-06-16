@@ -1,9 +1,31 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+
+// Format time function to handle ISO time strings
+const formatTime = (timeString) => {
+    if (!timeString) return 'Waktu tidak tersedia';
+    
+    try {
+        // Handle ISO format time strings
+        if (timeString.includes('T')) {
+            const date = parseISO(timeString);
+            return format(date, 'HH:mm');
+        }
+        
+        // Handle simple time strings
+        return timeString;
+    } catch (error) {
+        console.error("Error formatting time:", error);
+        return 'Waktu tidak tersedia';
+    }
+};
 
 export default function Show({ auth, event }) {
+    // Format the time for display
+    const formattedTime = formatTime(event.time);
+    
     return (
         <AuthenticatedLayout
             auth={auth}
@@ -67,7 +89,7 @@ export default function Show({ auth, event }) {
                                             </div>
                                             <div>
                                                 <div className="text-sm font-medium text-gray-500">Waktu</div>
-                                                <div>{event.time}</div>
+                                                <div>{formattedTime}</div>
                                             </div>
                                             <div>
                                                 <div className="text-sm font-medium text-gray-500">Lokasi</div>
