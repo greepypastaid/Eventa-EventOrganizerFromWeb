@@ -50,44 +50,137 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
         }
     };
     
-    // Send tickets to selected registrations
-    const sendTickets = () => {
-        if (selectedRegistrations.length === 0) {
-            alert("Please select at least one registration");
-            return;
-        }
-        
-        // In a real app, this would be a GraphQL mutation
-        alert(`Tickets sent to ${selectedRegistrations.length} attendees!`);
-        
-        // Update local state to reflect tickets sent
-        setRegistrations(registrations.map(reg => 
-            selectedRegistrations.includes(reg.id) 
-                ? { ...reg, ticket_sent: true } 
-                : reg
-        ));
-        
-        setSelectedRegistrations([]);
-    };
-    
     // Verify selected registrations
-    const verifyRegistrations = () => {
+    const verifyRegistrations = async () => {
         if (selectedRegistrations.length === 0) {
-            alert("Please select at least one registration");
+            setMessage('Please select at least one registration');
+            return;
+        }
+
+        // Check if any selected registrations are already verified
+        const alreadyVerified = selectedRegistrations.filter(id => {
+            const registration = registrations.find(reg => reg.id === id);
+            return registration.verified;
+        });
+
+        if (alreadyVerified.length > 0) {
+            setMessage('Some selected registrations are already verified');
             return;
         }
         
-        // In a real app, this would be a GraphQL mutation
-        alert(`Verified ${selectedRegistrations.length} registrations!`);
-        
-        // Update local state to reflect verification
-        setRegistrations(registrations.map(reg => 
-            selectedRegistrations.includes(reg.id) 
-                ? { ...reg, verified: true } 
-                : reg
-        ));
-        
-        setSelectedRegistrations([]);
+        try {
+            setLoading(true);
+            const promises = selectedRegistrations.map(id => 
+                axios.post(`/api/registrations/${id}/verify`)
+            );
+            
+            const results = await Promise.all(promises);
+            
+            // Update local state with verified registrations
+            setRegistrations(prevRegistrations => 
+                prevRegistrations.map(reg => {
+                    if (selectedRegistrations.includes(reg.id)) {
+                        const result = results.find(r => r.data.registration.id === reg.id);
+                        if (result) {
+                            return {
+                                ...reg,
+                                ...result.data.registration,
+                                user: reg.user,
+                                event: reg.event
+                            };
+                        }
+                    }
+                    return reg;
+                })
+            );
+            
+            setMessage('Registrations verified successfully');
+            setSelectedRegistrations([]);
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Failed to verify registrations');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Send tickets to selected registrations
+    const sendTickets = async () => {
+        if (selectedRegistrations.length === 0) {
+            setMessage('Please select at least one registration');
+            return;
+        }
+
+        // Check if all selected registrations are verified
+        const unverifiedRegistrations = selectedRegistrations.filter(id => {
+            const registration = registrations.find(reg => reg.id === id);
+            return !registration.verified;
+        });
+
+        if (unverifiedRegistrations.length > 0) {
+            setMessage('All registrations must be verified before sending tickets');
+            return;
+        }
+
+        // Check if any selected registrations already have tickets
+        const registrationsWithTickets = selectedRegistrations.filter(id => {
+            const registration = registrations.find(reg => reg.id === id);
+            return registration.ticket_id;
+        });
+
+        if (registrationsWithTickets.length > 0) {
+            setMessage('Some selected registrations already have tickets');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const promises = selectedRegistrations.map(id => 
+                axios.post(`/api/registrations/${id}/send-ticket`)
+            );
+            
+            const results = await Promise.all(promises);
+            
+            // Update local state with sent tickets
+            setRegistrations(prevRegistrations => 
+                prevRegistrations.map(reg => {
+                    if (selectedRegistrations.includes(reg.id)) {
+                        const result = results.find(r => r.data.registration.id === reg.id);
+                        if (result) {
+                            return {
+                                ...reg,
+                                ...result.data.registration,
+                                user: reg.user,
+                                event: reg.event
+                            };
+                        }
+                    }
+                    return reg;
+                })
+            );
+            
+            setMessage('Tickets sent successfully');
+            setSelectedRegistrations([]);
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Failed to send tickets');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle individual registration verification
+    const handleVerifyRegistration = async (registrationId) => {
+        try {
+            setLoading(true);
+            const response = await axios.post(`/api/registrations/${registrationId}/verify`);
+            setRegistrations(registrations.map(reg => 
+                reg.id === registrationId ? response.data.registration : reg
+            ));
+            setMessage('Registration verified successfully');
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Failed to verify registration');
+        } finally {
+            setLoading(false);
+        }
     };
     
     // Filter registrations based on search term
@@ -105,12 +198,29 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
         try {
             setLoading(true);
             const response = await axios.post(`/api/registrations/${registrationId}/send-ticket`);
-            setRegistrations(registrations.map(reg => 
-                reg.id === registrationId ? response.data.registration : reg
-            ));
+            
+            // Update local state with sent ticket while preserving user and event data
+            setRegistrations(prevRegistrations => 
+                prevRegistrations.map(reg => {
+                    if (reg.id === registrationId) {
+                        return {
+                            ...reg,
+                            ...response.data.registration,
+                            user: reg.user,
+                            event: reg.event
+                        };
+                    }
+                    return reg;
+                })
+            );
+            
             setMessage('Ticket sent successfully');
         } catch (error) {
-            setMessage(error.response?.data?.message || 'Failed to send ticket');
+            if (error.response?.status === 400 && error.response?.data?.message === 'Registration must be verified before sending ticket') {
+                setMessage('Please verify the registration before sending the ticket');
+            } else {
+                setMessage(error.response?.data?.message || 'Failed to send ticket');
+            }
         } finally {
             setLoading(false);
         }
@@ -176,15 +286,36 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
                                     <div className="flex space-x-3">
                                         <button
                                             onClick={verifyRegistrations}
-                                            disabled={selectedRegistrations.length === 0}
-                                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${selectedRegistrations.length === 0 ? 'bg-indigo-300' : 'bg-indigo-600 hover:bg-indigo-700'}`}
+                                            disabled={selectedRegistrations.length === 0 || selectedRegistrations.every(id => 
+                                                registrations.find(reg => reg.id === id)?.verified
+                                            )}
+                                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                                                selectedRegistrations.length === 0 || selectedRegistrations.every(id => 
+                                                    registrations.find(reg => reg.id === id)?.verified
+                                                ) ? 'bg-indigo-300' : 'bg-indigo-600 hover:bg-indigo-700'
+                                            }`}
                                         >
                                             Verify Selected
                                         </button>
                                         <button
                                             onClick={sendTickets}
-                                            disabled={selectedRegistrations.length === 0}
-                                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${selectedRegistrations.length === 0 ? 'bg-green-300' : 'bg-green-600 hover:bg-green-700'}`}
+                                            disabled={selectedRegistrations.length === 0 || 
+                                                !selectedRegistrations.every(id => 
+                                                    registrations.find(reg => reg.id === id)?.verified
+                                                ) ||
+                                                selectedRegistrations.some(id => 
+                                                    registrations.find(reg => reg.id === id)?.ticket_id
+                                                )
+                                            }
+                                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+                                                selectedRegistrations.length === 0 || 
+                                                !selectedRegistrations.every(id => 
+                                                    registrations.find(reg => reg.id === id)?.verified
+                                                ) ||
+                                                selectedRegistrations.some(id => 
+                                                    registrations.find(reg => reg.id === id)?.ticket_id
+                                                ) ? 'bg-green-300' : 'bg-green-600 hover:bg-green-700'
+                                            }`}
                                         >
                                             Send Tickets
                                         </button>
@@ -248,31 +379,19 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                        <button className="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
-                                                        {!registration.verified && (
-                                                            <button 
-                                                                onClick={() => {
-                                                                    // In a real app, this would be a GraphQL mutation
-                                                                    setRegistrations(registrations.map(reg => 
-                                                                        reg.id === registration.id 
-                                                                            ? { ...reg, verified: true } 
-                                                                            : reg
-                                                                    ));
-                                                                }}
-                                                                className="text-green-600 hover:text-green-900 mr-3"
-                                                            >
-                                                                Verify
-                                                            </button>
-                                                        )}
-                                                        {registration.verified && !registration.ticket?.id && (
-                                                            <button 
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        {registration.ticket?.id ? (
+                                                            <span className="text-green-600 font-medium">Ticket Sent</span>
+                                                        ) : registration.verified ? (
+                                                            <button
                                                                 onClick={() => handleSendTicket(registration.id)}
+                                                                className="text-indigo-600 hover:text-indigo-900"
                                                                 disabled={loading}
-                                                                className="text-blue-600 hover:text-blue-900"
                                                             >
                                                                 Send Ticket
                                                             </button>
+                                                        ) : (
+                                                            <span className="text-gray-500">Pending Verification</span>
                                                         )}
                                                     </td>
                                                 </tr>

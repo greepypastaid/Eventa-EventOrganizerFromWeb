@@ -8,6 +8,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class RegistrationController extends Controller
 {
@@ -97,6 +98,34 @@ class RegistrationController extends Controller
     }
 
     /**
+     * Verify a registration
+     */
+    public function verifyRegistration(Request $request, $registrationId)
+    {
+        $registration = Registration::findOrFail($registrationId);
+        
+        // Check if already verified
+        if ($registration->verified) {
+            return response()->json([
+                'message' => 'Registration is already verified'
+            ], 400);
+        }
+        
+        // Update registration status
+        $registration->update([
+            'verified' => true,
+            'registration_code' => 'VERIFIED-' . Str::upper(Str::random(8)) . '-' . $registration->event_id
+        ]);
+        
+        // TODO: Send email notification to user about verification
+        
+        return response()->json([
+            'message' => 'Registration verified successfully',
+            'registration' => $registration->load('event')
+        ]);
+    }
+
+    /**
      * Send ticket to a registration
      */
     public function sendTicket(Request $request, $registrationId)
@@ -110,6 +139,13 @@ class RegistrationController extends Controller
             ], 400);
         }
         
+        // Ensure registration is verified before sending ticket
+        if (!$registration->verified) {
+            return response()->json([
+                'message' => 'Registration must be verified before sending ticket'
+            ], 400);
+        }
+        
         // Create a ticket
         $ticket = Ticket::create([
             'qrCode' => 'EVT-' . Str::upper(Str::random(8)) . '-' . $registration->event_id,
@@ -119,8 +155,7 @@ class RegistrationController extends Controller
         // Update registration with ticket
         $registration->update([
             'ticket_id' => $ticket->id,
-            'registration_code' => $ticket->qrCode,
-            'verified' => true
+            'registration_code' => $ticket->qrCode
         ]);
         
         // TODO: Send email notification to user
@@ -128,6 +163,27 @@ class RegistrationController extends Controller
         return response()->json([
             'message' => 'Ticket sent successfully',
             'registration' => $registration->load('event', 'ticket')
+        ]);
+    }
+
+    /**
+     * View a ticket
+     */
+    public function viewTicket($ticketId)
+    {
+        $ticket = Ticket::with(['registration.event', 'registration.user'])
+                      ->findOrFail($ticketId);
+        
+        // Only allow the ticket owner to view their ticket
+        if ($ticket->registration->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        return Inertia::render('Tickets/View', [
+            'ticket' => $ticket,
+            'auth' => [
+                'user' => Auth::user()
+            ]
         ]);
     }
 } 

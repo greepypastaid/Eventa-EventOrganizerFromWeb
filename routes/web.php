@@ -56,10 +56,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/events/{id}/register', [RegistrationController::class, 'register'])->name('events.register');
     Route::get('/user/registrations', [RegistrationController::class, 'getUserRegistrations'])->name('user.registrations');
     Route::get('/user/registrations/{id}', [RegistrationController::class, 'getUserRegistration'])->name('user.registrations.show');
+    
+    // Ticket routes
+    Route::get('/tickets/{ticket}', [RegistrationController::class, 'viewTicket'])->name('tickets.view');
 });
 
 Route::middleware(['auth'])->group(function () {
     // Registration routes
+    Route::post('/api/registrations/{registration}/verify', [RegistrationController::class, 'verifyRegistration'])
+        ->name('registrations.verify')
+        ->middleware('admin');
     Route::post('/api/registrations/{registration}/send-ticket', [RegistrationController::class, 'sendTicket'])
         ->name('registrations.send-ticket')
         ->middleware('admin');
