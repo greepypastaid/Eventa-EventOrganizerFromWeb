@@ -29,7 +29,8 @@ export default function Show({ auth, event }) {
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Event Details</h2>}
+            header={<div className="h-16 bg-transparent"></div>}  
+            headerClassName="bg-transparent shadow-none" 
         >
             <Head title={`Event: ${event.title}`} />
 

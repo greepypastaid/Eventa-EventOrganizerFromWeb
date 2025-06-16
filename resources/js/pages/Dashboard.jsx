@@ -24,6 +24,25 @@ const formatTime = (timeString) => {
     }
 };
 
+// Format date function to handle ISO date strings
+const formatDate = (dateString) => {
+    if (!dateString) return 'Date not set';
+    
+    try {
+        // Parse ISO date string
+        if (dateString.includes('T')) {
+            const date = parseISO(dateString);
+            return format(date, 'dd MMM yyyy');
+        }
+        
+        // Handle regular date strings
+        return format(new Date(dateString), 'dd MMM yyyy');
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return 'Invalid date';
+    }
+};
+
 // Ticket component that can be printed
 const PrintableTicket = ({ registration, event, onClose }) => {
     // Use the actual registration code from the backend
@@ -361,7 +380,7 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500">{event.date}</div>
+                                                    <div className="text-sm text-gray-500">{formatDate(event.date)}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{event.registrations_count || 0}</div>

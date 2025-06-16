@@ -26,7 +26,7 @@ class Event extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date' => 'datetime',
         'time' => 'datetime',
         'ticket_price' => 'decimal:2',
         'is_hero' => 'boolean',

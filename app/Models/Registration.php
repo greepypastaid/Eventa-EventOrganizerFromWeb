@@ -33,4 +33,16 @@ class Registration extends Model
     {
         return $this->belongsTo(Ticket::class);
     }
+    
+    public function registrationSessions()
+    {
+        return $this->hasMany(RegistrationSession::class);
+    }
+    
+    public function sessions()
+    {
+        return $this->belongsToMany(EventSession::class, 'registration_sessions')
+            ->withPivot('attended', 'checked_in_at')
+            ->withTimestamps();
+    }
 }

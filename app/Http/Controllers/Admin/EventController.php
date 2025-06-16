@@ -49,6 +49,7 @@ class EventController extends Controller
             'primary_color' => 'nullable|string|max:7',
             'secondary_color' => 'nullable|string|max:7',
             'is_hero' => 'boolean',
+            'sessions' => 'nullable|array',
         ]);
 
         // Handle photo upload
@@ -83,6 +84,21 @@ class EventController extends Controller
             'is_hero' => $request->boolean('is_hero'),
             'event_type' => $validated['event_type'],
         ]);
+
+        // Create sessions if provided
+        if ($request->has('sessions') && is_array($request->sessions)) {
+            foreach ($request->sessions as $sessionData) {
+                $event->sessions()->create([
+                    'name' => $sessionData['name'],
+                    'description' => $sessionData['description'] ?? null,
+                    'speaker' => $sessionData['speaker'] ?? null,
+                    'start_time' => $sessionData['start_time'],
+                    'end_time' => $sessionData['end_time'],
+                    'capacity' => $sessionData['capacity'] ?? null,
+                    'is_full_day' => $sessionData['is_full_day'] ?? false,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event created successfully.');
     }
@@ -126,6 +142,7 @@ class EventController extends Controller
             'primary_color' => 'nullable|string|max:7',
             'secondary_color' => 'nullable|string|max:7',
             'is_hero' => 'boolean',
+            'sessions' => 'nullable|array',
         ]);
 
         // Handle photo upload
@@ -170,6 +187,50 @@ class EventController extends Controller
             'is_hero' => $request->boolean('is_hero'),
             'event_type' => $validated['event_type'],
         ]);
+
+        // Update sessions if provided
+        if ($request->has('sessions') && is_array($request->sessions)) {
+            // Get existing session IDs
+            $existingSessionIds = $event->sessions->pluck('id')->toArray();
+            $newSessionIds = [];
+            
+            foreach ($request->sessions as $sessionData) {
+                if (isset($sessionData['id']) && is_numeric($sessionData['id'])) {
+                    // Update existing session
+                    $session = $event->sessions()->find($sessionData['id']);
+                    if ($session) {
+                        $session->update([
+                            'name' => $sessionData['name'],
+                            'description' => $sessionData['description'] ?? null,
+                            'speaker' => $sessionData['speaker'] ?? null,
+                            'start_time' => $sessionData['start_time'],
+                            'end_time' => $sessionData['end_time'],
+                            'capacity' => $sessionData['capacity'] ?? null,
+                            'is_full_day' => $sessionData['is_full_day'] ?? false,
+                        ]);
+                        $newSessionIds[] = $session->id;
+                    }
+                } else {
+                    // Create new session
+                    $session = $event->sessions()->create([
+                        'name' => $sessionData['name'],
+                        'description' => $sessionData['description'] ?? null,
+                        'speaker' => $sessionData['speaker'] ?? null,
+                        'start_time' => $sessionData['start_time'],
+                        'end_time' => $sessionData['end_time'],
+                        'capacity' => $sessionData['capacity'] ?? null,
+                        'is_full_day' => $sessionData['is_full_day'] ?? false,
+                    ]);
+                    $newSessionIds[] = $session->id;
+                }
+            }
+            
+            // Delete sessions that are no longer in the request
+            $sessionsToDelete = array_diff($existingSessionIds, $newSessionIds);
+            if (!empty($sessionsToDelete)) {
+                $event->sessions()->whereIn('id', $sessionsToDelete)->delete();
+            }
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event updated successfully.');
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Ticket;
+use App\Models\EventSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -32,6 +33,8 @@ class RegistrationController extends Controller
             'organization' => 'nullable|string|max:255',
             'dietaryRestrictions' => 'nullable|string|max:255',
             'specialRequests' => 'nullable|string|max:1000',
+            'session_ids' => 'nullable|array',
+            'session_ids.*' => 'exists:event_sessions,id'
         ]);
         
         // Get the event
@@ -51,7 +54,7 @@ class RegistrationController extends Controller
         
         // Create the registration without a ticket
         $registration = Registration::create([
-            'registration_code' => 'PENDING-' . Str::upper(Str::random(8)) . '-' . $eventId,
+            'registration_code' => 'EVT-' . strtoupper(Str::random(8)),
             'event_id' => $eventId,
             'user_id' => Auth::id(),
             'verified' => false,
@@ -65,13 +68,29 @@ class RegistrationController extends Controller
             ],
         ]);
         
-        // Load the event relationship
-        $registration->load('event');
+        // Attach sessions if provided
+        if (!empty($validated['session_ids'])) {
+            foreach ($validated['session_ids'] as $sessionId) {
+                $registration->registrationSessions()->create([
+                    'event_session_id' => $sessionId,
+                    'attended' => false
+                ]);
+            }
+        } else {
+            // If no specific sessions are selected, register for all sessions
+            $allSessions = $event->sessions()->get();
+            foreach ($allSessions as $session) {
+                $registration->registrationSessions()->create([
+                    'event_session_id' => $session->id,
+                    'attended' => false
+                ]);
+            }
+        }
         
         return response()->json([
-            'message' => 'Registration successful. Please wait for admin approval to receive your ticket.',
+            'message' => 'Registration successful!',
             'registration' => $registration
-        ], 201);
+        ]);
     }
     
     /**

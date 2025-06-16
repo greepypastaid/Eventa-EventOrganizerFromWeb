@@ -139,21 +139,52 @@ const CountdownTimer = ({ targetDate }) => {
 };
 
 // Registration form component
-const RegistrationForm = ({ eventId, onRegister, eventTitle }) => {
+const RegistrationForm = ({ eventId, onRegister, eventTitle, sessions = [] }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    session_ids: []
   });
   
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
+  const handleSessionSelect = (sessionId) => {
+    const currentSessions = [...formData.session_ids];
+    if (currentSessions.includes(sessionId)) {
+      setFormData({ 
+        ...formData, 
+        session_ids: currentSessions.filter(id => id !== sessionId) 
+      });
+    } else {
+      setFormData({ 
+        ...formData, 
+        session_ids: [...currentSessions, sessionId] 
+      });
+    }
+  };
+  
+  const handleFullSessionSelect = () => {
+    if (sessions.length === formData.session_ids.length) {
+      // Deselect all
+      setFormData({ ...formData, session_ids: [] });
+    } else {
+      // Select all
+      setFormData({ 
+        ...formData, 
+        session_ids: sessions.map(session => session.id) 
+      });
+    }
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     onRegister(formData);
   };
+  
+  const allSessionsSelected = sessions.length > 0 && sessions.length === formData.session_ids.length;
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -195,6 +226,38 @@ const RegistrationForm = ({ eventId, onRegister, eventTitle }) => {
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         />
       </div>
+      
+      {sessions.length > 0 && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block text-sm font-medium text-gray-700">Select Sessions</label>
+            <button 
+              type="button" 
+              onClick={handleFullSessionSelect}
+              className="text-sm text-indigo-600 hover:text-indigo-800"
+            >
+              {allSessionsSelected ? 'Deselect All' : 'Select All Sessions'}
+            </button>
+          </div>
+          
+          <div className="space-y-2 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
+            {sessions.map(session => (
+              <div key={session.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`session-${session.id}`}
+                  checked={formData.session_ids.includes(session.id)}
+                  onChange={() => handleSessionSelect(session.id)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor={`session-${session.id}`} className="ml-2 block text-sm text-gray-700">
+                  {session.name} ({format(new Date(session.start_time), 'dd MMM, HH:mm')})
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       <div>
         <button
@@ -272,6 +335,69 @@ const EventTicket = ({ registration, event }) => {
   );
 };
 
+// Session card component for the schedule tab
+const SessionCard = ({ session, isSelected, onSelect, selectable }) => {
+  const startTime = new Date(session.start_time);
+  const endTime = new Date(session.end_time);
+  
+  const formatSessionTime = (time) => {
+    return format(time, 'HH:mm');
+  };
+  
+  const formatSessionDate = (time) => {
+    return format(time, 'EEEE, d MMMM yyyy');
+  };
+  
+  return (
+    <div 
+      className={`bg-white p-6 rounded-lg shadow-sm border ${
+        isSelected ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-100'
+      } mb-4 transition-all duration-200`}
+      onClick={() => selectable && onSelect && onSelect(session.id)}
+    >
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+        <h3 className="text-xl font-bold text-gray-800 mb-2 sm:mb-0">{session.name}</h3>
+        {selectable && (
+          <div className="flex items-center">
+            <input 
+              type="checkbox" 
+              checked={isSelected}
+              onChange={() => onSelect(session.id)}
+              className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <span className="ml-2 text-sm text-gray-600">Select</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex items-center text-gray-600 mb-3">
+        <CalendarIcon />
+        <span className="ml-2 text-sm">{formatSessionDate(startTime)}</span>
+      </div>
+      
+      <div className="flex items-center text-gray-600 mb-4">
+        <ClockIcon />
+        <span className="ml-2 text-sm">
+          {formatSessionTime(startTime)} - {formatSessionTime(endTime)}
+        </span>
+      </div>
+      
+      {session.speaker && (
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-700">Speaker:</span>
+          <span className="ml-2 text-sm text-gray-600">{session.speaker}</span>
+        </div>
+      )}
+      
+      {session.description && (
+        <div className="mt-4">
+          <p className="text-gray-600 text-sm">{session.description}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function EventDetailPage({ event }) {
   const { auth } = usePage().props;
   const Layout = auth.user ? AuthenticatedLayout : GuestLayout;
@@ -285,6 +411,8 @@ export default function EventDetailPage({ event }) {
   const [fetchError, setFetchError] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   
   // Track scroll position to adjust navbar appearance
   useEffect(() => {
@@ -328,21 +456,44 @@ export default function EventDetailPage({ event }) {
         if (response.data && response.data.events) {
           console.log(`Found ${response.data.events.length} related events`);
           setRelatedEvents(response.data.events);
-        } else {
+          } else {
           console.warn("API response missing 'events' property:", response.data);
-          setRelatedEvents([]);
-        }
-        setIsLoadingEvents(false);
-      })
-      .catch(error => {
-        console.error("Error fetching related events:", error);
+            setRelatedEvents([]);
+          }
+          setIsLoadingEvents(false);
+        })
+        .catch(error => {
+          console.error("Error fetching related events:", error);
         setFetchError(error.message || "Failed to fetch related events");
-        setRelatedEvents([]);
-        setIsLoadingEvents(false);
-      });
+          setRelatedEvents([]);
+          setIsLoadingEvents(false);
+        });
     } else {
       console.warn("Cannot fetch related events: event or event.organizer is undefined");
       setIsLoadingEvents(false);
+    }
+  }, [event]);
+  
+  // Fetch event sessions
+  useEffect(() => {
+    if (event && event.id) {
+      setIsLoadingSessions(true);
+      
+      axios.get(`/api/events/${event.id}/sessions`)
+        .then(response => {
+          console.log("Sessions response:", response.data);
+          if (response.data && response.data.sessions) {
+            setSessions(response.data.sessions);
+          } else {
+            setSessions([]);
+          }
+          setIsLoadingSessions(false);
+        })
+        .catch(error => {
+          console.error("Error fetching sessions:", error);
+          setSessions([]);
+          setIsLoadingSessions(false);
+        });
     }
   }, [event]);
   
@@ -715,7 +866,7 @@ export default function EventDetailPage({ event }) {
                   className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold hover:bg-indigo-100 transition-colors"
                 >
                   Register Now!
-                </button>
+              </button>
               )}
               {!registration && !auth.user && (
                 <Link 
@@ -723,7 +874,7 @@ export default function EventDetailPage({ event }) {
                   className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold hover:bg-indigo-100 transition-colors"
                 >
                   Login to Register
-                </Link>
+              </Link>
               )}
             </div>
           </div>
@@ -788,12 +939,36 @@ export default function EventDetailPage({ event }) {
                     <ClockIcon />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-indigo-600 mb-2">Session</h3>
-                    <p className="text-gray-600">
-                      {event.session_details || event.duration 
-                        ? `${event.session_details || ''} ${event.duration ? `(${event.duration})` : ''}` 
-                        : 'Session details not available'}
-                    </p>
+                    <h3 className="text-xl font-semibold text-indigo-600 mb-2">Sessions</h3>
+                    {isLoadingSessions ? (
+                      <p className="text-gray-500">Loading sessions...</p>
+                    ) : sessions.length > 0 ? (
+                      <div className="space-y-2">
+                        {sessions.slice(0, 3).map(session => (
+                          <div key={session.id} className="border-l-2 border-indigo-200 pl-3">
+                            <p className="font-medium text-gray-700">{session.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(session.start_time), 'dd MMM, HH:mm')} - 
+                              {format(new Date(session.end_time), 'HH:mm')}
+                            </p>
+                          </div>
+                        ))}
+                        {sessions.length > 3 && (
+                          <button 
+                            onClick={() => setActiveTab('schedule')}
+                            className="text-sm text-indigo-600 hover:text-indigo-800 mt-2"
+                          >
+                            View all {sessions.length} sessions
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-gray-600">
+                        {event.session_details || event.duration 
+                          ? `${event.session_details || ''} ${event.duration ? `(${event.duration})` : ''}` 
+                          : 'No sessions available for this event'}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -826,7 +1001,12 @@ export default function EventDetailPage({ event }) {
                 {showRegistrationForm ? (
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-bold text-indigo-600 mb-4">Register for {event.title}</h3>
-                    <RegistrationForm eventId={event.id} onRegister={handleRegister} eventTitle={event.title} />
+                    <RegistrationForm 
+                      eventId={event.id} 
+                      onRegister={handleRegister} 
+                      eventTitle={event.title}
+                      sessions={sessions}
+                    />
                   </div>
                 ) : registration ? (
                   <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
@@ -887,12 +1067,25 @@ export default function EventDetailPage({ event }) {
               <h2 className="text-3xl font-bold text-indigo-600 mb-6">Event Schedule</h2>
               <p className="text-gray-600 mb-8">Here's the detailed schedule for {event.title}. All sessions are subject to change.</p>
               
-              <div className="space-y-6">
-                {/* Schedule data is not available in the event model yet. This is a placeholder. */}
+              {isLoadingSessions ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">Loading sessions...</p>
+                </div>
+              ) : sessions.length > 0 ? (
+                <div className="space-y-6">
+                  {sessions.map(session => (
+                    <SessionCard 
+                      key={session.id} 
+                      session={session}
+                      selectable={false}
+                    />
+                  ))}
+                </div>
+              ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                   <p className="text-gray-500">No detailed schedule has been provided for this event yet. Please check back later!</p>
                 </div>
-              </div>
+              )}
             </div>
           )}
           
@@ -910,7 +1103,7 @@ export default function EventDetailPage({ event }) {
                   Contact Support
                 </Link>
               </div>
-            </div>
+          </div>
           )}
         </div>
       </div>
