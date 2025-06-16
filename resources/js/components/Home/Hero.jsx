@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 
@@ -15,37 +15,94 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Get unique locations from events
   const uniqueLocations = [...new Set(allEvents.map(event => event.location))].filter(Boolean);
 
   const handleSearch = () => {
     setIsSearching(true);
+    setIsLoading(true); // Set loading state to true
     setShowMobileFilters(false);
     
-    // Search through all events
-    const results = (allEvents || []).filter(e => {
-      const matchesQuery = searchQuery === '' || 
-        e.title.toLowerCase().includes(searchQuery.toLowerCase().trim());
-      
-      const matchesDate = selectedDate === '' || 
-        (e.date && format(new Date(e.date), 'MMMM yyyy') === selectedDate);
-      
-      const matchesLocation = selectedLocation === '' || 
-        e.location === selectedLocation;
-      
-      const matchesPrice = selectedPriceRange === '' || 
-        priceRanges.find(range => {
-          if (range.label === selectedPriceRange) {
-            return e.ticket_price >= range.min && e.ticket_price <= range.max;
-          }
-          return false;
-        });
-      
-      return matchesQuery && matchesDate && matchesLocation && matchesPrice;
+    console.log("Starting search with criteria:", {
+      query: searchQuery,
+      date: selectedDate,
+      location: selectedLocation,
+      priceRange: selectedPriceRange
     });
     
-    setSearchResults(results);
+    console.log("Available events for filtering:", allEvents?.length || 0);
+    
+    // Verify allEvents is available
+    if (!allEvents || allEvents.length === 0) {
+      console.error("No events available for searching");
+      setSearchResults([]);
+      setTimeout(() => setIsLoading(false), 500); // Short delay for UI feedback
+      return;
+    }
+    
+    // Simulate a brief delay to show loading state (better UX)
+    setTimeout(() => {
+      try {
+        // Search through all events
+        const results = allEvents.filter(e => {
+          // Debug each event filtering
+          const debugEvent = { id: e.id, title: e.title, date: e.date };
+          
+          // Query matching
+          const matchesQuery = searchQuery === '' || 
+            e.title?.toLowerCase().includes(searchQuery.toLowerCase().trim());
+          
+          // Date matching with error handling
+          let matchesDate = true;
+          if (selectedDate) {
+            try {
+              const eventDate = e.date ? format(new Date(e.date), 'MMMM yyyy') : '';
+              matchesDate = eventDate === selectedDate;
+              debugEvent.formattedDate = eventDate;
+            } catch (error) {
+              console.error(`Error formatting date for event ${e.id}:`, error);
+              matchesDate = false;
+            }
+          }
+          
+          // Location matching with null check
+          const matchesLocation = selectedLocation === '' || 
+            (e.location && e.location === selectedLocation);
+          
+          // Price range matching with null check
+          let matchesPrice = true;
+          if (selectedPriceRange) {
+            const range = priceRanges.find(r => r.label === selectedPriceRange);
+            if (range) {
+              matchesPrice = e.ticket_price !== null && 
+                            e.ticket_price !== undefined &&
+                            e.ticket_price >= range.min && 
+                            e.ticket_price <= range.max;
+            }
+          }
+          
+          // Log filtering results for debugging
+          const matches = matchesQuery && matchesDate && matchesLocation && matchesPrice;
+          if (searchQuery && e.title?.toLowerCase().includes(searchQuery.toLowerCase())) {
+            console.log(`Event "${e.title}" match result:`, { 
+              matches, matchesQuery, matchesDate, matchesLocation, matchesPrice, eventDetails: debugEvent 
+            });
+          }
+          
+          return matchesQuery && matchesDate && matchesLocation && matchesPrice;
+        });
+        
+        console.log(`Search completed: Found ${results.length} matching events`);
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Error during search:", error);
+        setSearchResults([]);
+      } finally {
+        setIsLoading(false); // Always set loading to false when done
+      }
+    }, 500); // Small delay to show loading indicator
   };
 
   const heroImage = event?.photo_url || "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop";
@@ -243,7 +300,11 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
             <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Search Results</h2>
               
-              {searchResults.length === 0 ? (
+              {isLoading ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Loading...</p>
+                </div>
+              ) : searchResults.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-gray-500">No events match your criteria.</p>
                   <button 
@@ -263,6 +324,10 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
                             src={event.photo_url || "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop"} 
                             alt={event.title} 
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error(`Failed to load image for event: ${event.title}`);
+                              e.target.src = "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2070&auto=format&fit=crop";
+                            }}
                           />
                         </div>
                         <div className="p-4">

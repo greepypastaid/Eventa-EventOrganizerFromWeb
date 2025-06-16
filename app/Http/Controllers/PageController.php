@@ -53,8 +53,18 @@ class PageController extends Controller
                       ->orderBy('date', 'asc')
                       ->get();
                       
+        // Define price ranges
+        $priceRanges = [
+            ['label' => 'Free', 'min' => 0, 'max' => 0],
+            ['label' => 'Under Rp 100.000', 'min' => 1, 'max' => 100000],
+            ['label' => 'Rp 100.000 - Rp 500.000', 'min' => 100000, 'max' => 500000],
+            ['label' => 'Rp 500.000 - Rp 1.000.000', 'min' => 500000, 'max' => 1000000],
+            ['label' => 'Above Rp 1.000.000', 'min' => 1000000, 'max' => PHP_FLOAT_MAX],
+        ];
+                            
         return Inertia::render('EventsPage', [
-            'events' => $events
+            'events' => $events,
+            'priceRanges' => $priceRanges
         ]);
     }
 
@@ -65,8 +75,18 @@ class PageController extends Controller
                         ->orderBy('date', 'asc')
                         ->get();
                         
+        // Define price ranges
+        $priceRanges = [
+            ['label' => 'Free', 'min' => 0, 'max' => 0],
+            ['label' => 'Under Rp 100.000', 'min' => 1, 'max' => 100000],
+            ['label' => 'Rp 100.000 - Rp 500.000', 'min' => 100000, 'max' => 500000],
+            ['label' => 'Rp 500.000 - Rp 1.000.000', 'min' => 500000, 'max' => 1000000],
+            ['label' => 'Above Rp 1.000.000', 'min' => 1000000, 'max' => PHP_FLOAT_MAX],
+        ];
+                            
         return Inertia::render('ConcertsPage', [
-            'concerts' => $concerts
+            'concerts' => $concerts,
+            'priceRanges' => $priceRanges
         ]);
     }
 

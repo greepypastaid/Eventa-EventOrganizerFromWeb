@@ -4,23 +4,23 @@ const testimonials = [
   {
     id: 1,
     content: "Eventure made planning our company's annual conference a breeze. The platform is intuitive, and the customer service team was incredibly helpful throughout the process.",
-    author: "Sarah Johnson",
-    position: "Event Manager at TechCorp",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+    author: "Muhammad Khoirul Ihsan",
+    position: "Founder of Pangory",
+    avatar: "/storage/testimonial1.jpeg",
   },
   {
     id: 2,
     content: "I've attended multiple concerts booked through Eventure, and the experience has always been seamless. From ticket purchase to event entry, everything is well organized.",
-    author: "Michael Chen",
-    position: "Music Enthusiast",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+    author: "Risky Yuniar Pratama",
+    position: "Founder of Pangory",
+    avatar: "/storage/testimonial2.jpeg",
   },
   {
     id: 3,
     content: "As a small business owner, I've used Eventure to host several workshops. The platform helped me reach a wider audience and simplified the entire event management process.",
-    author: "Amelia Rodriguez",
-    position: "Founder of Creative Studios",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80",
+    author: "Lyon Ambrosio Djuanda",
+    position: "Founder of Lansia Monitoring",
+    avatar: "/storage/testimonial3.jpeg",
   },
 ];
 
