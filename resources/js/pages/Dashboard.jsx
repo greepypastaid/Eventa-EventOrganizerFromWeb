@@ -187,15 +187,14 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
     const userUpcomingEvents = upcomingEvents || [];
 
     return (
-        <AuthenticatedLayout
+        <AuthenticatedLayout 
             auth={auth}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                {isAdmin ? "Event Organizer Dashboard" : "My Events Dashboard"}
-            </h2>}
+            header={null}
+            headerClassName="hidden"
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
+            <div className="py-12 pt-32">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {isAdmin ? (
                         <>
