@@ -58,4 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/user/registrations/{id}', [RegistrationController::class, 'getUserRegistration'])->name('user.registrations.show');
 });
 
+Route::middleware(['auth'])->group(function () {
+    // Registration routes
+    Route::post('/api/registrations/{registration}/send-ticket', [RegistrationController::class, 'sendTicket'])
+        ->name('registrations.send-ticket')
+        ->middleware('admin');
+});
+
 require __DIR__.'/auth.php'; 

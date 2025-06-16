@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import axios from 'axios';
 
 export default function RegistrationsPage({ auth, events = [], registrations: initialRegistrations = [] }) {
     const [selectedEvent, setSelectedEvent] = useState('');
@@ -8,6 +9,7 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
     const [loading, setLoading] = useState(false);
     const [selectedRegistrations, setSelectedRegistrations] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [message, setMessage] = useState(null);
     
     // Initialize and update registrations whenever the prop changes
     useEffect(() => {
@@ -16,19 +18,19 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
     
     // Load registrations when event is selected
     useEffect(() => {
-        // Filter registrations when an event is selected
         if (selectedEvent) {
             setLoading(true);
             setSelectedRegistrations([]);
             
-            const filteredRegs = registrations.filter(reg => reg.event_id === parseInt(selectedEvent));
+            // Filter the initial registrations instead of the current state
+            const filteredRegs = initialRegistrations.filter(reg => reg.event_id === parseInt(selectedEvent));
             setRegistrations(filteredRegs);
             setLoading(false);
-        } else if (registrations.length > 0) {
+        } else {
             // Show all registrations when no event is selected
-            setRegistrations(registrations);
+            setRegistrations(initialRegistrations);
         }
-    }, [selectedEvent, registrations]);
+    }, [selectedEvent, initialRegistrations]);
     
     // Handle checkbox selection
     const handleSelectRegistration = (id) => {
@@ -98,6 +100,21 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
                userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
                eventTitle.toLowerCase().includes(searchTerm.toLowerCase());
     }) : [];
+
+    const handleSendTicket = async (registrationId) => {
+        try {
+            setLoading(true);
+            const response = await axios.post(`/api/registrations/${registrationId}/send-ticket`);
+            setRegistrations(registrations.map(reg => 
+                reg.id === registrationId ? response.data.registration : reg
+            ));
+            setMessage('Ticket sent successfully');
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Failed to send ticket');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <AuthenticatedLayout
@@ -227,7 +244,7 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
                                                                 {registration.verified ? 'Verified' : 'Pending'}
                                                             </span>
                                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${registration.ticket?.id ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                                                                {registration.ticket?.id ? 'Ticket Created' : 'No Ticket'}
+                                                                {registration.ticket?.id ? 'Ticket Sent' : 'No Ticket'}
                                                             </span>
                                                         </div>
                                                     </td>
@@ -250,17 +267,11 @@ export default function RegistrationsPage({ auth, events = [], registrations: in
                                                         )}
                                                         {registration.verified && !registration.ticket?.id && (
                                                             <button 
-                                                                onClick={() => {
-                                                                    // In a real app, this would be a GraphQL mutation
-                                                                    setRegistrations(registrations.map(reg => 
-                                                                        reg.id === registration.id 
-                                                                            ? { ...reg, ticket: { id: Math.floor(Math.random() * 1000) } } 
-                                                                            : reg
-                                                                    ));
-                                                                }}
+                                                                onClick={() => handleSendTicket(registration.id)}
+                                                                disabled={loading}
                                                                 className="text-blue-600 hover:text-blue-900"
                                                             >
-                                                                Create Ticket
+                                                                Send Ticket
                                                             </button>
                                                         )}
                                                     </td>

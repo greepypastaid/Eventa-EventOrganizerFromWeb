@@ -406,7 +406,7 @@ export default function EventDetailPage({ event }) {
             >
               Schedule
             </button>
-            {registration && (
+            {registration && registration.ticket_id && (
               <button 
                 onClick={() => setActiveTab('ticket')}
                 className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === 'ticket' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
@@ -473,21 +473,16 @@ export default function EventDetailPage({ event }) {
                     <RegistrationForm eventId={event.id} onRegister={handleRegister} />
                   </div>
                 ) : registration ? (
-                  <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                    <div className="flex items-center text-green-600 mb-4">
-                      <div className="bg-green-100 rounded-full p-2 mr-3">
-                        <CheckIcon />
+                  <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                    <div className="flex items-center text-yellow-600 mb-4">
+                      <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                        <ClockIcon />
                       </div>
-                      <h3 className="text-lg font-semibold">Registration Complete!</h3>
+                      <h3 className="text-lg font-semibold">Registration Pending</h3>
                     </div>
-                    <p className="text-gray-600 mb-4">Thank you for registering for {event.title}. Your ticket has been generated.</p>
-                    <button
-                      onClick={() => setActiveTab('ticket')}
-                      className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-                    >
-                      View My Ticket
-                    </button>
-                </div>
+                    <p className="text-gray-600 mb-4">Thank you for registering for {event.title}. Your registration is pending admin approval. You will receive your ticket once approved.</p>
+                    <p className="text-sm text-gray-500 mb-4">Registration Code: {registration.registration_code}</p>
+                  </div>
                 ) : auth.user ? (
                   <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
                     <h3 className="text-xl font-bold text-indigo-600 mb-4">Join This Event</h3>

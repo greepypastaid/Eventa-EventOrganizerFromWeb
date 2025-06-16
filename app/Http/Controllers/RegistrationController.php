@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Registration;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -40,21 +41,11 @@ class RegistrationController extends Controller
             ], 200);
         }
         
-        // Create a ticket first
-        $ticketCode = 'EVT-' . Str::upper(Str::random(8)) . '-' . $eventId;
-        
-        // Create ticket in the tickets table
-        $ticket = \App\Models\Ticket::create([
-            'qrCode' => $ticketCode,
-            'sentAt' => now()
-        ]);
-        
-        // Create the registration
+        // Create the registration without a ticket
         $registration = Registration::create([
-            'registration_code' => $ticket->qrCode,
+            'registration_code' => 'PENDING-' . Str::upper(Str::random(8)) . '-' . $eventId,
             'event_id' => $eventId,
             'user_id' => Auth::id(),
-            'ticket_id' => $ticket->id,
             'verified' => false,
             'custom_fields' => [
                 'name' => $validated['name'],
@@ -70,7 +61,7 @@ class RegistrationController extends Controller
         $registration->load('event');
         
         return response()->json([
-            'message' => 'Registration successful',
+            'message' => 'Registration successful. Please wait for admin approval to receive your ticket.',
             'registration' => $registration
         ], 201);
     }
@@ -102,6 +93,41 @@ class RegistrationController extends Controller
                                  
         return response()->json([
             'registration' => $registration
+        ]);
+    }
+
+    /**
+     * Send ticket to a registration
+     */
+    public function sendTicket(Request $request, $registrationId)
+    {
+        $registration = Registration::findOrFail($registrationId);
+        
+        // Check if ticket already exists
+        if ($registration->ticket_id) {
+            return response()->json([
+                'message' => 'Ticket already sent for this registration'
+            ], 400);
+        }
+        
+        // Create a ticket
+        $ticket = Ticket::create([
+            'qrCode' => 'EVT-' . Str::upper(Str::random(8)) . '-' . $registration->event_id,
+            'sentAt' => now()
+        ]);
+        
+        // Update registration with ticket
+        $registration->update([
+            'ticket_id' => $ticket->id,
+            'registration_code' => $ticket->qrCode,
+            'verified' => true
+        ]);
+        
+        // TODO: Send email notification to user
+        
+        return response()->json([
+            'message' => 'Ticket sent successfully',
+            'registration' => $registration->load('event', 'ticket')
         ]);
     }
 } 
