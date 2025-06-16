@@ -12,33 +12,33 @@ export default function AboutPage() {
     const teamMembers = [
         {
             name: "Gangsar Reka Pambudi",
-            position: "Yapping",
-            image: "/storage/team/khoirul.jpg", 
+            position: "Developer",
+            image: "/storage/team/Reka.jpg", 
             fallbackImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
         },
         {
             name: "Muhammad Danny Hidayat",
-            position: "CTO & Co-Founder",
-            image: "/storage/team/risky.jpg",
+            position: "Developer",
+            image: "/storage/team/Dany.jpg",
             fallbackImage: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
         },
         {
-            name: "",
-            position: "Febriant Cahyo Nugroho",
-            image: "/storage/team/lyon.jpg",
-            fallbackImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+            name: "Zulfa Mardlotillah",
+            position: "UI/UX Designer",
+            image: "/storage/team/Zulfa.jpg",
+            fallbackImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
         },
         {
-            name: "Faizal Risky",
-            position: "CMO & Design Lead",
-            image: "/storage/team/adelya.jpg",
+            name: "Faizal Rifky Abdillah",
+            position: "Quality Analyst Tester",
+            image: "/storage/team/Faizal.jpg",
             fallbackImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1376&q=80"
         },
         {
-            name: "Zulfa Mardlotillah",
-            position: "Lead Developer",
-            image: "/storage/team/farhan.jpg",
-            fallbackImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
+            name: "Febriant Cahyo Nugroho",
+            position: "Quality Analyst Tester",
+            image: "/storage/team/Briant.jpg",
+            fallbackImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"
         }
     ];
 
@@ -98,8 +98,7 @@ export default function AboutPage() {
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-2">Easy Event Creation</h3>
                                     <p className="text-gray-600">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
-                                    </p>
+                                    Create and manage events in just a few steps. Our platform is designed for users to create events quickly, easily and without technical barriers.                                    </p>
                                 </div>
                                 
                                 <div className="bg-blue-50 p-6 rounded-lg">
@@ -108,10 +107,9 @@ export default function AboutPage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                         </svg>
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">Secure Transactions</h3>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">Secure Ticketing</h3>
                                     <p className="text-gray-600">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
-                                    </p>
+                                    All QR code ticketing is done with high security standards. We protect every transaction to ensure user convenience and trust.                                    </p>
                                 </div>
                                 
                                 <div className="bg-purple-50 p-6 rounded-lg">
@@ -122,8 +120,7 @@ export default function AboutPage() {
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-2">Advanced Analytics</h3>
                                     <p className="text-gray-600">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
-                                    </p>
+                                    Monitor your event performance in real-time. Our analytics features help you understand attendee trends, promotion effectiveness and data-driven decision-making.                                    </p>
                                 </div>
                             </div>
                         </div>

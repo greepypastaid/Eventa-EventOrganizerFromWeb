@@ -1,0 +1,26 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+#Import gambar
+from google.colab import drive
+drive.mount('/content/drive')
+image_path1 =('/content/drive/My Drive/Pengolahan citra/pepaya1.jpeg')
+image_path2 =('/content/drive/My Drive/Pengolahan citra/pepaya2.jpeg')
+#Mengubah gambar ke grayscale
+image1 = cv2.imread(image_path1, cv2.IMREAD_GRAYSCALE)
+image2 = cv2.imread(image_path2, cv2.IMREAD_GRAYSCALE)
+#Mengubah gambar ke biner
+image1_binary = cv2.threshold(image1, 127, 255, cv2.THRESH_BINARY)[1]
+image2_binary = cv2.threshold(image2, 127, 255, cv2.THRESH_BINARY)[1]
+# Menghitung Hu Moments
+moments1 = cv2.moments(image1_binary)
+moments2 = cv2.moments(image2_binary)
+
+hu_moments1 = cv2.HuMoments(moments1)
+hu_moments2 = cv2.HuMoments(moments2)
+
+# Menampilkan Hu Moments
+print("Hu Moments Pepaya 1:")
+print(hu_moments1)
+print("\nHu Moments Pepaya 2:")
+print(hu_moments2)
