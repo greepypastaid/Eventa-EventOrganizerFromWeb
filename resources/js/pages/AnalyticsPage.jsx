@@ -80,12 +80,12 @@ export default function AnalyticsPage({ auth, events = [], dailyRegistrations = 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<div className="h-16 bg-transparent"></div>}
-            headerClassName="bg-transparent shadow-none"
+            header={null}
+            headerClassName="hidden"
         >
             <Head title="Analytics" />
 
-            <div className="py-12">
+            <div className="py-12 pt-32">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <div className="mb-6">

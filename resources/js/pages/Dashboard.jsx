@@ -187,14 +187,14 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
     const userUpcomingEvents = upcomingEvents || [];
 
     return (
-        <AuthenticatedLayout
+        <AuthenticatedLayout 
             auth={auth}
-            header={<div className="h-16 bg-transparent"></div>}
-            headerClassName="bg-transparent shadow-none"
+            header={null}
+            headerClassName="hidden"
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
+            <div className="py-12 pt-32">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {isAdmin ? (
                         <>

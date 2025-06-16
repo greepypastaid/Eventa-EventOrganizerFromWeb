@@ -9,7 +9,7 @@ import Testimonials from '../components/home/Testimonials';
 import HowItWorks from '../components/home/HowItWorks';
 
 export default function HomePage(props) {
-  const { auth, heroEvent, recentEvents } = props;
+  const { auth, heroEvent, recentEvents, allEvents, uniqueDates, priceRanges } = props;
   const Layout = auth.user ? AuthenticatedLayout : GuestLayout;
 
   return (
@@ -17,7 +17,12 @@ export default function HomePage(props) {
       <Head title="Home" />
 
       <div>
-        <Hero event={heroEvent} />
+        <Hero 
+          event={heroEvent} 
+          allEvents={allEvents} 
+          uniqueDates={uniqueDates}
+          priceRanges={priceRanges}
+        />
         <div className="bg-white">
           <EventList events={recentEvents} />
           <HowItWorks />
