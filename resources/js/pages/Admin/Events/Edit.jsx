@@ -128,8 +128,13 @@ export default function Edit({ auth, event }) {
             ));
             setEditingSessionId(null);
         } else {
-            // Add new session
-            setData('sessions', [...data.sessions, { ...currentSession, id: Date.now() }]);
+            // Add new session - Don't set temporary ID for new sessions
+            // The backend will create proper IDs in the database
+            setData('sessions', [...data.sessions, { 
+                ...currentSession,
+                // Don't set a temporary ID that will confuse the backend
+                id: null 
+            }]);
         }
         
         // Reset the session form
@@ -165,6 +170,8 @@ export default function Edit({ auth, event }) {
     
     const submit = (e) => {
         e.preventDefault();
+        // Debug log to see what data is being sent
+        console.log('Submitting event with sessions:', data.sessions);
         // Use post for multipart form data with PUT method
         post(route('admin.events.update', event.id), {
             forceFormData: true, // This is still needed with `post` to handle file uploads

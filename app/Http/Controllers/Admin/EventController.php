@@ -195,7 +195,7 @@ class EventController extends Controller
             $newSessionIds = [];
             
             foreach ($request->sessions as $sessionData) {
-                if (isset($sessionData['id']) && is_numeric($sessionData['id'])) {
+                if (isset($sessionData['id']) && !is_null($sessionData['id']) && is_numeric($sessionData['id'])) {
                     // Update existing session
                     $session = $event->sessions()->find($sessionData['id']);
                     if ($session) {

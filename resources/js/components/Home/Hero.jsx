@@ -123,9 +123,9 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
               <div className="max-w-2xl mx-auto md:mx-0">
                   {event ? (
                     <>
-                      <p className="font-semibold mb-2 tracking-wider">Upcoming {event.event_type === 'concert' ? 'Concert' : 'Event'}!</p>
-                      <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 leading-tight">{heroTitle}</h1>
-                      <p className="text-base sm:text-lg text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
+                      <p className="text-lg sm:text-xl font-semibold mb-2 tracking-wider">Upcoming {event.event_type === 'concert' ? 'Concert' : 'Event'}!</p>
+                      <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold mb-4 leading-tight">{heroTitle}</h1>
+                      <p className="text-xl sm:text-2xl text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
                       <Link href={route('events.detail', event.id)} className="group inline-flex items-center gap-2 sm:gap-3 bg-transparent border-2 border-white px-6 sm:px-8 py-2 sm:py-3 rounded-xl font-semibold hover:bg-white hover:text-indigo-700 transition-all duration-300">
                       Book Now!
                       <svg width="15" height="12" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="transform transition-transform group-hover:translate-x-1">
@@ -136,8 +136,8 @@ function Hero({ event, allEvents, uniqueDates, priceRanges }) {
                     </>
                   ) : (
                     <>
-                      <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 leading-tight">{heroTitle}</h1>
-                      <p className="text-base sm:text-lg text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
+                      <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold mb-4 leading-tight">{heroTitle}</h1>
+                      <p className="text-xl sm:text-2xl text-gray-200 mb-6 sm:mb-8">{heroDate}</p>
                     </>
                   )}
               </div>

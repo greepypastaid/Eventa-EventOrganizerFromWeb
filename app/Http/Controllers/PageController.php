@@ -12,10 +12,23 @@ class PageController extends Controller
     {
         // Get hero event and recent events for homepage
         $heroEvent = Event::where('is_hero', true)->first();
-        $recentEvents = Event::where('is_hero', false)
+        
+        // Get regular events
+        $regularEvents = Event::where('is_hero', false)
+                            ->where('event_type', 'regular')
                             ->orderBy('date', 'asc')
-                            ->limit(4)
+                            ->limit(3)
                             ->get();
+        
+        // Get concert events
+        $concertEvents = Event::where('event_type', 'concert')
+                            ->orderBy('date', 'asc')
+                            ->limit(3)
+                            ->get();
+        
+        // Combine regular and concert events for recent events
+        $recentEvents = $regularEvents->merge($concertEvents);
+        
         $allEvents = Event::orderBy('date', 'asc')->get();
 
         // Get unique months and years from events
