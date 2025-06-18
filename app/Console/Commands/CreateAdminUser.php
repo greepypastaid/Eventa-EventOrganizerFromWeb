@@ -6,25 +6,25 @@ use Illuminate\Console\Command;
 
 class CreateAdminUser extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:create-admin-user';
+  /**
+   * The name and signature of the console command.
+   *
+   * @var string
+   */
+  protected $signature = 'app:create-admin-user';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
+  /**
+   * The console command description.
+   *
+   * @var string
+   */
+  protected $description = 'Command description';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
-    {
-        //
-    }
+  /**
+   * Execute the console command.
+   */
+  public function handle()
+  {
+    //
+  }
 }

@@ -40,14 +40,16 @@ export default function EventCreatePage({ auth }) {
     
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        // In a real app, this would use GraphQL mutation
-        console.log("Event data:", data);
-        console.log("Sessions:", sessions);
-        
+        setSubmitting(true);
+        const eventData = { ...data, sessions };
+        console.log('Event submitted:', eventData);
+
+        // TODO: Replace with actual API call (e.g., POST to /api/events)
+        // For now, just simulating a success state
+        setSubmitting(false);
+
         // Simulate success and redirect
-        alert("Event created successfully!");
-        // In production, would redirect to the event page
+        // router.visit('/admin/events');
     };
 
     return (

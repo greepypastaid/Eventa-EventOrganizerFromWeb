@@ -7,27 +7,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RegistrationSession extends Model
 {
-    use HasFactory;
-    
-    protected $fillable = [
-        'registration_id',
-        'event_session_id',
-        'attended',
-        'checked_in_at'
-    ];
+  use HasFactory;
 
-    protected $casts = [
-        'attended' => 'boolean',
-        'checked_in_at' => 'datetime',
-    ];
+  protected $fillable = [
+    'registration_id',
+    'event_session_id',
+    'attended',
+    'checked_in_at',
+  ];
 
-    public function registration()
-    {
-        return $this->belongsTo(Registration::class);
-    }
+  protected $casts = [
+    'attended' => 'boolean',
+    'checked_in_at' => 'datetime',
+  ];
 
-    public function eventSession()
-    {
-        return $this->belongsTo(EventSession::class);
-    }
+  public function registration()
+  {
+    return $this->belongsTo(Registration::class);
+  }
+
+  public function eventSession()
+  {
+    return $this->belongsTo(EventSession::class);
+  }
 }

@@ -6,7 +6,7 @@ import axios from 'axios';
 import Footer from '@/components/layout/Footer';
 import { QRCodeSVG } from 'qrcode.react';
 import { format, parseISO } from 'date-fns';
-import MainNavbar from '@/Components/MainNavbar';
+import MainNavbar from '@/Components/Navigation/MainNavbar';
 
 // Icons
 const CalendarIcon = () => (

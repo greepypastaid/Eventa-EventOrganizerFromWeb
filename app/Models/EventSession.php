@@ -7,37 +7,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EventSession extends Model
 {
-    use HasFactory;
-    
-    protected $fillable = [
-        'event_id',
-        'name',
-        'description',
-        'speaker',
-        'start_time',
-        'end_time',
-        'capacity',
-        'is_full_day'
-    ];
+  use HasFactory;
 
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-        'is_full_day' => 'boolean',
-    ];
+  protected $fillable = [
+    'event_id',
+    'name',
+    'description',
+    'speaker',
+    'start_time',
+    'end_time',
+    'capacity',
+    'is_full_day',
+  ];
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class);
-    }
+  protected $casts = [
+    'start_time' => 'datetime',
+    'end_time' => 'datetime',
+    'is_full_day' => 'boolean',
+  ];
 
-    public function registrationSessions()
-    {
-        return $this->hasMany(RegistrationSession::class);
-    }
+  public function event()
+  {
+    return $this->belongsTo(Event::class);
+  }
 
-    public function registrations()
-    {
-        return $this->belongsToMany(Registration::class, 'registration_sessions');
-    }
+  public function registrationSessions()
+  {
+    return $this->hasMany(RegistrationSession::class);
+  }
+
+  public function registrations()
+  {
+    return $this->belongsToMany(Registration::class, 'registration_sessions');
+  }
 }
