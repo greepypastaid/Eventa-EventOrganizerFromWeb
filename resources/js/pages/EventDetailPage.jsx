@@ -5,7 +5,8 @@ import { Head, usePage, Link } from '@inertiajs/react';
 import axios from 'axios';
 import Footer from '@/components/layout/Footer';
 import { QRCodeSVG } from 'qrcode.react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import MainNavbar from '@/Components/Navigation/MainNavbar';
 
 // Icons
 const CalendarIcon = () => (
@@ -138,24 +139,52 @@ const CountdownTimer = ({ targetDate }) => {
 };
 
 // Registration form component
-const RegistrationForm = ({ eventId, onRegister }) => {
+const RegistrationForm = ({ eventId, onRegister, eventTitle, sessions = [] }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    organization: '',
-    dietaryRestrictions: '',
-    specialRequests: ''
+    session_ids: []
   });
   
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
+  const handleSessionSelect = (sessionId) => {
+    const currentSessions = [...formData.session_ids];
+    if (currentSessions.includes(sessionId)) {
+      setFormData({ 
+        ...formData, 
+        session_ids: currentSessions.filter(id => id !== sessionId) 
+      });
+    } else {
+      setFormData({ 
+        ...formData, 
+        session_ids: [...currentSessions, sessionId] 
+      });
+    }
+  };
+  
+  const handleFullSessionSelect = () => {
+    if (sessions.length === formData.session_ids.length) {
+      // Deselect all
+      setFormData({ ...formData, session_ids: [] });
+    } else {
+      // Select all
+      setFormData({ 
+        ...formData, 
+        session_ids: sessions.map(session => session.id) 
+      });
+    }
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     onRegister(formData);
   };
+  
+  const allSessionsSelected = sessions.length > 0 && sessions.length === formData.session_ids.length;
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -198,49 +227,44 @@ const RegistrationForm = ({ eventId, onRegister }) => {
         />
       </div>
       
-      <div>
-        <label htmlFor="organization" className="block text-sm font-medium text-gray-700">Organization</label>
-        <input
-          type="text"
-          name="organization"
-          id="organization"
-          value={formData.organization}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="dietaryRestrictions" className="block text-sm font-medium text-gray-700">Dietary Restrictions</label>
-        <input
-          type="text"
-          name="dietaryRestrictions"
-          id="dietaryRestrictions"
-          value={formData.dietaryRestrictions}
-          onChange={handleChange}
-          placeholder="Vegetarian, vegan, allergies, etc."
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="specialRequests" className="block text-sm font-medium text-gray-700">Special Requests</label>
-        <textarea
-          name="specialRequests"
-          id="specialRequests"
-          rows="3"
-          value={formData.specialRequests}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-        ></textarea>
-      </div>
+      {sessions.length > 0 && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block text-sm font-medium text-gray-700">Select Sessions</label>
+            <button 
+              type="button" 
+              onClick={handleFullSessionSelect}
+              className="text-sm text-indigo-600 hover:text-indigo-800"
+            >
+              {allSessionsSelected ? 'Deselect All' : 'Select All Sessions'}
+            </button>
+          </div>
+          
+          <div className="space-y-2 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
+            {sessions.map(session => (
+              <div key={session.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`session-${session.id}`}
+                  checked={formData.session_ids.includes(session.id)}
+                  onChange={() => handleSessionSelect(session.id)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor={`session-${session.id}`} className="ml-2 block text-sm text-gray-700">
+                  {session.name} ({format(new Date(session.start_time), 'dd MMM, HH:mm')})
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       
       <div>
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
-          Register for Event
+          {eventTitle ? `Register for ${eventTitle}` : 'Secure My Spot'}
         </button>
       </div>
     </form>
@@ -251,11 +275,33 @@ const RegistrationForm = ({ eventId, onRegister }) => {
 const EventTicket = ({ registration, event }) => {
   const ticketCode = `EVENTA-${registration.id}-${event.id}`;
   
+  // Format the time for ticket display
+  const formatTicketTime = (timeString) => {
+    if (!timeString) return '00:00';
+    
+    try {
+      // Handle ISO format time strings
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, 'HH:mm');
+      }
+      
+      // Handle simple time strings
+      return timeString;
+    } catch (error) {
+      console.error("Error formatting time for ticket:", error);
+      return '00:00';
+    }
+  };
+  
+  const formattedDate = event.date ? format(new Date(event.date), 'eeee, d MMMM yyyy') : 'Date not set';
+  const formattedTime = formatTicketTime(event.time);
+  
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 max-w-md mx-auto">
       <div className="text-center mb-4">
         <h3 className="text-xl font-bold">{event.title}</h3>
-        <p className="text-gray-600">{event.date} • {event.time}</p>
+        <p className="text-gray-600">{formattedDate} • {formattedTime}</p>
       </div>
       
       <div className="border-t border-b border-gray-200 py-4 my-4">
@@ -289,6 +335,69 @@ const EventTicket = ({ registration, event }) => {
   );
 };
 
+// Session card component for the schedule tab
+const SessionCard = ({ session, isSelected, onSelect, selectable }) => {
+  const startTime = new Date(session.start_time);
+  const endTime = new Date(session.end_time);
+  
+  const formatSessionTime = (time) => {
+    return format(time, 'HH:mm');
+  };
+  
+  const formatSessionDate = (time) => {
+    return format(time, 'EEEE, d MMMM yyyy');
+  };
+  
+  return (
+    <div 
+      className={`bg-white p-6 rounded-lg shadow-sm border ${
+        isSelected ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-100'
+      } mb-4 transition-all duration-200`}
+      onClick={() => selectable && onSelect && onSelect(session.id)}
+    >
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+        <h3 className="text-xl font-bold text-gray-800 mb-2 sm:mb-0">{session.name}</h3>
+        {selectable && (
+          <div className="flex items-center">
+            <input 
+              type="checkbox" 
+              checked={isSelected}
+              onChange={() => onSelect(session.id)}
+              className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <span className="ml-2 text-sm text-gray-600">Select</span>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex items-center text-gray-600 mb-3">
+        <CalendarIcon />
+        <span className="ml-2 text-sm">{formatSessionDate(startTime)}</span>
+      </div>
+      
+      <div className="flex items-center text-gray-600 mb-4">
+        <ClockIcon />
+        <span className="ml-2 text-sm">
+          {formatSessionTime(startTime)} - {formatSessionTime(endTime)}
+        </span>
+      </div>
+      
+      {session.speaker && (
+        <div className="mb-4">
+          <span className="text-sm font-medium text-gray-700">Speaker:</span>
+          <span className="ml-2 text-sm text-gray-600">{session.speaker}</span>
+        </div>
+      )}
+      
+      {session.description && (
+        <div className="mt-4">
+          <p className="text-gray-600 text-sm">{session.description}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function EventDetailPage({ event }) {
   const { auth } = usePage().props;
   const Layout = auth.user ? AuthenticatedLayout : GuestLayout;
@@ -297,6 +406,96 @@ export default function EventDetailPage({ event }) {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const [registration, setRegistration] = useState(null);
   const [activeTab, setActiveTab] = useState('info');
+  const [relatedEvents, setRelatedEvents] = useState([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
+  
+  // Track scroll position to adjust navbar appearance
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  // Get related events by the same organizer - improved approach
+  useEffect(() => {
+    if (event && event.organizer) {
+      // Check if organizer name is empty or too short
+      if (!event.organizer.trim() || event.organizer.trim().length < 2) {
+        console.warn("Organizer name is empty or too short, cannot fetch related events");
+        setIsLoadingEvents(false);
+        setFetchError("Organizer name is not valid");
+        return;
+      }
+      
+      setIsLoadingEvents(true);
+      setFetchError(null);
+      
+      console.log(`Fetching related events for organizer: "${event.organizer}", excluding event ID: ${event.id}`);
+      
+      // Properly encode the organizer parameter and use axios for better error handling
+      axios.get(`/api/events`, {
+        params: {
+          organizer: event.organizer,
+          exclude_id: event.id,
+          limit: 5
+        }
+      })
+      .then(response => {
+        console.log("API Response:", response.data);
+        if (response.data && response.data.events) {
+          console.log(`Found ${response.data.events.length} related events`);
+          setRelatedEvents(response.data.events);
+          } else {
+          console.warn("API response missing 'events' property:", response.data);
+            setRelatedEvents([]);
+          }
+          setIsLoadingEvents(false);
+        })
+        .catch(error => {
+          console.error("Error fetching related events:", error);
+        setFetchError(error.message || "Failed to fetch related events");
+          setRelatedEvents([]);
+          setIsLoadingEvents(false);
+        });
+    } else {
+      console.warn("Cannot fetch related events: event or event.organizer is undefined");
+      setIsLoadingEvents(false);
+    }
+  }, [event]);
+  
+  // Fetch event sessions
+  useEffect(() => {
+    if (event && event.id) {
+      setIsLoadingSessions(true);
+      
+      axios.get(`/api/events/${event.id}/sessions`)
+        .then(response => {
+          console.log("Sessions response:", response.data);
+          if (response.data && response.data.sessions) {
+            setSessions(response.data.sessions);
+          } else {
+            setSessions([]);
+          }
+          setIsLoadingSessions(false);
+        })
+        .catch(error => {
+          console.error("Error fetching sessions:", error);
+          setSessions([]);
+          setIsLoadingSessions(false);
+        });
+    }
+  }, [event]);
   
   // Handle registration submission
   const handleRegister = (formData) => {
@@ -304,6 +503,9 @@ export default function EventDetailPage({ event }) {
     axios.post(route('events.register', event.id), {
       ...formData,
       event_id: event.id,
+      organization: null,
+      dietaryRestrictions: null,
+      specialRequests: null
     })
     .then(response => {
       // Set the registration data from the response
@@ -319,20 +521,62 @@ export default function EventDetailPage({ event }) {
   // Format the date for display
   const formattedDate = event.date ? format(new Date(event.date), 'eeee, d MMMM yyyy') : 'Date not set';
   
+  // Format the time for display
+  const formatTime = (timeString) => {
+    if (!timeString) return 'Time not set';
+    
+    try {
+      // Handle ISO format time strings
+      if (timeString.includes('T')) {
+        const date = parseISO(timeString);
+        return format(date, 'HH:mm');
+      }
+      
+      // Handle simple time strings
+      return timeString;
+    } catch (error) {
+      console.error("Error formatting time:", error);
+      return 'Time not set';
+    }
+  };
+  
+  const formattedTime = formatTime(event.time);
+  
+  // Calculate event duration (if start_time and end_time are available)
+  const getEventDuration = () => {
+    if (event.start_time && event.end_time) {
+      const startTime = formatTime(event.start_time);
+      const endTime = formatTime(event.end_time);
+      return `${startTime} - ${endTime}`;
+    } else if (event.time) {
+      return formattedTime;
+    }
+    return 'Time not specified';
+  };
+  
   // Create target date from event date and time
   const createTargetDate = () => {
     if (!event.date) return null;
     
     try {
-      // Parse the event date directly since it's already in 2025
+      // Parse the event date
       const dateObj = new Date(event.date);
       
       // If we have time, add it to the date
       if (event.time) {
-        const timeOnly = event.time.split('T')[1].split('.')[0]; // Get HH:MM:SS
-        const [hours, minutes] = timeOnly.split(':');
-        dateObj.setHours(parseInt(hours, 10));
-        dateObj.setMinutes(parseInt(minutes, 10));
+        let timeOnly;
+        
+        // Handle ISO format time strings
+        if (event.time.includes('T')) {
+          const timeParts = event.time.split('T')[1].split('.')[0].split(':'); // Get HH:MM:SS
+          dateObj.setHours(parseInt(timeParts[0], 10));
+          dateObj.setMinutes(parseInt(timeParts[1], 10));
+        } else {
+          // Handle simple time format
+          const timeParts = event.time.split(':');
+          dateObj.setHours(parseInt(timeParts[0], 10));
+          dateObj.setMinutes(parseInt(timeParts[1], 10));
+        }
       }
 
       return dateObj;
@@ -345,12 +589,252 @@ export default function EventDetailPage({ event }) {
   const targetDate = createTargetDate();
   
   return (
-    <Layout user={auth.user}>
+    <div className="min-h-screen bg-gray-50">
+      {/* Custom Navbar with transparent effect */}
+      <div className={`${isScrolled ? 'fixed' : 'absolute'} top-0 left-0 right-0 z-50 transition-all duration-300`}>
+        <div className="container mx-auto px-3 sm:px-4 pt-4 sm:pt-6">
+          <div className={`${isScrolled ? 'bg-white/90' : 'bg-white/20'} backdrop-blur-sm rounded-3xl px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg border border-white/20 transition-all duration-300`}>
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link href={route('home')} className={`flex items-center ${isScrolled ? 'text-indigo-700' : 'text-white'}`}>
+                <img 
+                  src="/images/logo.png" 
+                  alt="Eventa Logo" 
+                  className="w-8 h-8 sm:w-10 sm:h-10 mr-1 sm:mr-2 object-contain"
+                />
+                <span className="text-xl sm:text-2xl font-bold">Eventa</span>
+              </Link>
+            </div>
+
+            {/* Main Navigation - Desktop */}
+            <div className="hidden md:flex space-x-8">
+              <Link 
+                href={route('home')} 
+                className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors ${route().current('home') ? 'font-semibold' : ''}`}
+              >
+                Home
+              </Link>
+              <Link 
+                href={route('events')} 
+                className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors ${route().current('events') ? 'font-semibold' : ''}`}
+              >
+                Events
+              </Link>
+              <Link 
+                href={route('concerts')} 
+                className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors ${route().current('concerts') ? 'font-semibold' : ''}`}
+              >
+                Concerts
+              </Link>
+              <Link 
+                href={route('about')} 
+                className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors ${route().current('about') ? 'font-semibold' : ''}`}
+              >
+                About Us
+              </Link>
+            </div>
+
+            {/* Auth Buttons - Desktop */}
+            <div className="hidden md:flex items-center space-x-4">
+              {auth?.user ? (
+                <div className="flex items-center space-x-4">
+                  {auth.user.role === 'admin' && (
+                    <Link 
+                      href={route('dashboard')} 
+                      className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors`}
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+                  {auth.user.role !== 'admin' && (
+                    <Link 
+                      href={route('dashboard')} 
+                      className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors`}
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+                  <Link
+                    href={route('logout')}
+                    method="post"
+                    as="button"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-3xl font-medium hover:bg-indigo-700 transition-colors"
+                  >
+                    Log Out
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <Link 
+                    href={route('login')} 
+                    className={`${isScrolled ? 'text-gray-700 hover:text-indigo-700' : 'text-white hover:text-gray-200'} transition-colors`}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href={route('register')} 
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-3xl font-medium hover:bg-indigo-700 transition-colors"
+                  >
+                    SIGN UP
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)} 
+                className={`${isScrolled ? 'text-gray-700' : 'text-white'} focus:outline-none`}
+              >
+                <svg 
+                  className="w-6 h-6" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {isMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <div className="md:hidden mt-2 bg-white/90 backdrop-blur-lg rounded-3xl p-4 shadow-lg">
+              <div className="flex flex-col space-y-3">
+                <Link 
+                  href={route('home')} 
+                  className={`text-gray-700 py-2 ${route().current('home') ? 'font-semibold' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Home
+                </Link>
+                <Link 
+                  href={route('events')} 
+                  className={`text-gray-700 py-2 ${route().current('events') ? 'font-semibold' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Events
+                </Link>
+                <Link 
+                  href={route('concerts')} 
+                  className={`text-gray-700 py-2 ${route().current('concerts') ? 'font-semibold' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Concerts
+                </Link>
+                <Link 
+                  href={route('about')} 
+                  className={`text-gray-700 py-2 ${route().current('about') ? 'font-semibold' : ''}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  About Us
+                </Link>
+
+                {auth?.user ? (
+                  <>
+                    {auth.user.role === 'admin' && (
+                      <>
+                        <div className="border-t border-gray-200 my-2 pt-2">
+                          <div className="font-medium text-gray-800 mb-2">Admin Panel</div>
+                          <Link 
+                            href={route('dashboard')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Dashboard
+                          </Link>
+                          <Link 
+                            href={route('admin.events.index')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Manage Events
+                          </Link>
+                          <Link 
+                            href={route('admin.events.create')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Create Event
+                          </Link>
+                          <Link 
+                            href={route('registrations')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Registrations
+                          </Link>
+                          <Link 
+                            href={route('check-in')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            QR Check-in
+                          </Link>
+                          <Link 
+                            href={route('analytics')} 
+                            className="text-gray-700 py-2 pl-3 block"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Analytics
+                          </Link>
+                        </div>
+                      </>
+                    )}
+                    {auth.user.role !== 'admin' && (
+                      <Link 
+                        href={route('dashboard')} 
+                        className="text-gray-700 py-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+                    <Link
+                      href={route('logout')}
+                      method="post"
+                      as="button"
+                      className="bg-indigo-600 text-white px-4 py-2 rounded-3xl font-medium mt-2"
+                    >
+                      Log Out
+                    </Link>
+                  </>
+                ) : (
+                  <div className="flex flex-col space-y-2 pt-2">
+                    <Link 
+                      href={route('login')} 
+                      className="text-gray-700 py-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link 
+                      href={route('register')} 
+                      className="bg-indigo-600 text-white px-4 py-2 rounded-3xl font-medium text-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      SIGN UP
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <Head title={event.title} />
 
       {/* Hero Section with Countdown */}
       <div className="relative">
-        <div className="relative text-white">
+        <div className="relative text-white rounded-b-[2rem] sm:rounded-b-[3rem] overflow-hidden">
           <div className="absolute inset-0">
             <img 
               src={event.photo_url} 
@@ -360,10 +844,10 @@ export default function EventDetailPage({ event }) {
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/80 via-indigo-800/60 to-purple-900/40"></div>
           </div>
           
-          <div className="container mx-auto px-6 relative z-10 py-24 sm:py-32">
+          <div className="container mx-auto px-6 relative z-10 py-32 sm:py-40 md:pt-56">
             <div className="max-w-4xl">
               <p className="font-semibold mb-2 tracking-wider">Event Details</p>
-              <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-tight">{event.title}</h1>
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 leading-tight">{event.title}</h1>
               <p className="text-lg text-gray-200 mb-8">{formattedDate} at {event.location}</p>
               
               {/* Real-time Countdown Timer */}
@@ -371,7 +855,14 @@ export default function EventDetailPage({ event }) {
               
               {!registration && auth.user && (
                 <button 
-                  onClick={() => setShowRegistrationForm(true)}
+                  onClick={() => {
+                    // Prevent admins from registering
+                    if (auth.user.role === 'admin') {
+                      alert("Admins cannot register for events. Please use a regular user account.");
+                      return;
+                    }
+                    setShowRegistrationForm(true);
+                  }}
                   className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold hover:bg-indigo-100 transition-colors"
                 >
                   Register Now!
@@ -406,7 +897,7 @@ export default function EventDetailPage({ event }) {
             >
               Schedule
             </button>
-            {registration && (
+            {registration && registration.ticket_id && (
               <button 
                 onClick={() => setActiveTab('ticket')}
                 className={`py-4 px-6 font-medium text-sm border-b-2 ${activeTab === 'ticket' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
@@ -437,7 +928,47 @@ export default function EventDetailPage({ event }) {
                   </div>
                   <div>
                       <h3 className="text-xl font-semibold text-indigo-600 mb-2">When</h3>
-                      <p className="text-gray-600">{formattedDate} at {event.time ? event.time : '00:00'}</p>
+                      <p className="text-gray-600">{formattedDate}</p>
+                      <p className="text-gray-600 mt-1">Time: {getEventDuration()}</p>
+                  </div>
+                </div>
+                
+                {/* Session/Duration */}
+                <div className="flex items-start">
+                  <div className="text-indigo-600 mr-4">
+                    <ClockIcon />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-indigo-600 mb-2">Sessions</h3>
+                    {isLoadingSessions ? (
+                      <p className="text-gray-500">Loading sessions...</p>
+                    ) : sessions.length > 0 ? (
+                      <div className="space-y-2">
+                        {sessions.slice(0, 3).map(session => (
+                          <div key={session.id} className="border-l-2 border-indigo-200 pl-3">
+                            <p className="font-medium text-gray-700">{session.name}</p>
+                            <p className="text-sm text-gray-500">
+                              {format(new Date(session.start_time), 'dd MMM, HH:mm')} - 
+                              {format(new Date(session.end_time), 'HH:mm')}
+                            </p>
+                          </div>
+                        ))}
+                        {sessions.length > 3 && (
+                          <button 
+                            onClick={() => setActiveTab('schedule')}
+                            className="text-sm text-indigo-600 hover:text-indigo-800 mt-2"
+                          >
+                            View all {sessions.length} sessions
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-gray-600">
+                        {event.session_details || event.duration 
+                          ? `${event.session_details || ''} ${event.duration ? `(${event.duration})` : ''}` 
+                          : 'No sessions available for this event'}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -452,7 +983,7 @@ export default function EventDetailPage({ event }) {
                   </div>
                 </div>
                 
-                {/* Guest Stars */}
+                {/* Organizer */}
                 <div className="flex items-start">
                   <div className="text-indigo-600 mr-4">
                     <PeopleIcon />
@@ -470,31 +1001,44 @@ export default function EventDetailPage({ event }) {
                 {showRegistrationForm ? (
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-bold text-indigo-600 mb-4">Register for {event.title}</h3>
-                    <RegistrationForm eventId={event.id} onRegister={handleRegister} />
+                    <RegistrationForm 
+                      eventId={event.id} 
+                      onRegister={handleRegister} 
+                      eventTitle={event.title}
+                      sessions={sessions}
+                    />
                   </div>
                 ) : registration ? (
-                  <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                    <div className="flex items-center text-green-600 mb-4">
-                      <div className="bg-green-100 rounded-full p-2 mr-3">
-                        <CheckIcon />
+                  <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                    <div className="flex items-center text-yellow-600 mb-4">
+                      <div className="bg-yellow-100 rounded-full p-2 mr-3">
+                        <ClockIcon />
                       </div>
-                      <h3 className="text-lg font-semibold">Registration Complete!</h3>
+                      <h3 className="text-lg font-semibold">Registration Pending</h3>
                     </div>
-                    <p className="text-gray-600 mb-4">Thank you for registering for {event.title}. Your ticket has been generated.</p>
-                    <button
-                      onClick={() => setActiveTab('ticket')}
-                      className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-                    >
-                      View My Ticket
-                    </button>
-                </div>
+                    <p className="text-gray-600 mb-4">Thank you for registering for {event.title}. Your registration is pending admin approval. You will receive your ticket once approved.</p>
+                    <p className="text-sm text-gray-500 mb-4">Registration Code: {registration.registration_code}</p>
+                  </div>
+                ) : auth.user && auth.user.role === 'admin' ? (
+                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
+                    <h3 className="text-xl font-bold text-blue-600 mb-4">Admin Notice</h3>
+                    <p className="text-gray-600 mb-4">As an admin, you cannot register for events. This restriction is in place to maintain a clear separation between admin and participant roles.</p>
+                    <p className="text-gray-600">If you need to test the registration process, please use a regular user account.</p>
+                  </div>
                 ) : auth.user ? (
                   <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
                     <h3 className="text-xl font-bold text-indigo-600 mb-4">Join This Event</h3>
                     <p className="text-gray-600 mb-6">Secure your spot at {event.title}. Register now to receive your ticket with QR code for easy check-in.</p>
                     <p className="font-semibold text-lg mb-6">Price: Rp {event.ticket_price.toLocaleString('id-ID')}</p>
                     <button
-                      onClick={() => setShowRegistrationForm(true)}
+                      onClick={() => {
+                        // Prevent admins from registering
+                        if (auth.user.role === 'admin') {
+                          alert("Admins cannot register for events. Please use a regular user account.");
+                          return;
+                        }
+                        setShowRegistrationForm(true);
+                      }}
                       className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
                     >
                       Register Now
@@ -523,13 +1067,26 @@ export default function EventDetailPage({ event }) {
               <h2 className="text-3xl font-bold text-indigo-600 mb-6">Event Schedule</h2>
               <p className="text-gray-600 mb-8">Here's the detailed schedule for {event.title}. All sessions are subject to change.</p>
               
-              <div className="space-y-6">
-                {/* Schedule data is not available in the event model yet. This is a placeholder. */}
+              {isLoadingSessions ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">Loading sessions...</p>
+                </div>
+              ) : sessions.length > 0 ? (
+                <div className="space-y-6">
+                  {sessions.map(session => (
+                    <SessionCard 
+                      key={session.id} 
+                      session={session}
+                      selectable={false}
+                    />
+                  ))}
+                </div>
+              ) : (
                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                   <p className="text-gray-500">No detailed schedule has been provided for this event yet. Please check back later!</p>
-          </div>
-        </div>
-      </div>
+                </div>
+              )}
+            </div>
           )}
           
           {/* Ticket Tab */}
@@ -550,8 +1107,111 @@ export default function EventDetailPage({ event }) {
           )}
         </div>
       </div>
-
+      
+      {/* Related Events Section - Improved with loading state and error handling */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-indigo-600 mb-8">More Events by {event.organizer}</h2>
+          
+          {isLoadingEvents ? (
+            <div className="text-center py-10">
+              <p className="text-gray-500">Loading related events...</p>
+              {/* Could add a spinner here */}
+            </div>
+          ) : fetchError ? (
+            <div className="text-center py-10 bg-red-50 rounded-lg p-4 border border-red-100">
+              <p className="text-red-600 mb-2">Unable to load related events</p>
+              <p className="text-gray-600 text-sm">We're having trouble finding other events from this organizer. Please try again.</p>
+              <button 
+                onClick={() => {
+                  setIsLoadingEvents(true);
+                  setFetchError(null);
+                  axios.get(`/api/events`, {
+                    params: {
+                      organizer: event.organizer,
+                      exclude_id: event.id,
+                      limit: 5
+                    }
+                  })
+                  .then(response => {
+                    if (response.data && response.data.events) {
+                      setRelatedEvents(response.data.events);
+                    } else {
+                      setRelatedEvents([]);
+                    }
+                    setIsLoadingEvents(false);
+                  })
+                  .catch(error => {
+                    setFetchError(error.message || "Failed to fetch related events");
+                    setRelatedEvents([]);
+                    setIsLoadingEvents(false);
+                  });
+                }}
+                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+              >
+                Try Again
+              </button>
+              <p className="text-gray-400 text-xs mt-4">Technical details: {fetchError}</p>
+            </div>
+          ) : relatedEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedEvents.map((relatedEvent) => (
+                <Link href={route('events.detail', relatedEvent.id)} key={relatedEvent.id} className="group">
+                  <div className="bg-white rounded-xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                    <div className="relative h-52">
+                      <img 
+                        src={relatedEvent.photo_url} 
+                        alt={relatedEvent.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-3 py-1 rounded-full">
+                        <span className={`text-sm font-medium ${relatedEvent.event_type === 'concert' ? 'text-purple-600' : 'text-green-600'}`}>
+                          {relatedEvent.event_type === 'concert' ? 'Concert' : 'Regular'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6 flex-grow flex flex-col">
+                      <div className="mb-2 flex justify-between items-start">
+                        <h3 className="text-xl font-bold text-gray-800 group-hover:text-indigo-600 transition-colors duration-300 line-clamp-1">{relatedEvent.title}</h3>
+                      </div>
+                      
+                      <div className="flex items-center text-gray-600 mb-3">
+                        <CalendarIcon />
+                        <span className="ml-2 text-sm">
+                          {relatedEvent.date ? format(new Date(relatedEvent.date), 'eeee, d MMMM yyyy') : 'Date not set'}
+                        </span>
+                      </div>
+                      
+                      <p className="text-gray-600 line-clamp-2 mb-4 flex-grow">{relatedEvent.description}</p>
+                      
+                      <div className="mt-auto flex items-center justify-between">
+                        <p className="text-indigo-600 font-semibold">
+                          Rp {relatedEvent.ticket_price?.toLocaleString('id-ID') || 'Free'}
+                        </p>
+                        <span className="rounded-full bg-indigo-50 text-indigo-700 px-3 py-1 text-xs font-medium">
+                          View Details
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10 bg-gray-50 rounded-lg p-8 border border-gray-200">
+              <div className="text-indigo-600 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <p className="text-gray-700 font-medium text-lg mb-2">No other events from this organizer</p>
+              <p className="text-gray-500">Check back later for more events by {event.organizer}</p>
+            </div>
+          )}
+        </div>
+      </div>
+      
       <Footer />
-    </Layout>
+    </div>
   );
 } 

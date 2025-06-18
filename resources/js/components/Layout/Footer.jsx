@@ -16,10 +16,10 @@ export default function Footer() {
             <div className="w-1/2 mb-4">
               <h3 className="font-semibold mb-2 text-indigo-100 text-xs">Links</h3>
               <div className="grid grid-cols-2 gap-1 text-xs">
-                <a href="#" className="text-indigo-200 hover:text-white transition-colors py-1">About</a>
-                <a href="#" className="text-indigo-200 hover:text-white transition-colors py-1">Events</a>
-                <a href="#" className="text-indigo-200 hover:text-white transition-colors py-1">FAQ</a>
-                <a href="#" className="text-indigo-200 hover:text-white transition-colors py-1">Support</a>
+                <Link href="/about" className="text-indigo-200 hover:text-white transition-colors py-1">About</Link>
+                <Link href="/events" className="text-indigo-200 hover:text-white transition-colors py-1">Events</Link>
+                <Link href="/concerts" className="text-indigo-200 hover:text-white transition-colors py-1">Concerts</Link>
+                <Link href="/dashboard" className="text-indigo-200 hover:text-white transition-colors py-1">Dashboard</Link>
               </div>
             </div>
           </div>
@@ -31,10 +31,10 @@ export default function Footer() {
               <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></span>
               <span>Online Server</span>
             </div>
-            <span className="mb-2">Copyright 2025</span>
+            <span className="mb-2">Copyright © 2025 Eventa</span>
             <div className="flex space-x-4">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
+              <Link href="#" className="hover:text-white transition-colors">Terms</Link>
             </div>
           </div>
         </div>
@@ -45,34 +45,36 @@ export default function Footer() {
             <div className="col-span-2 mb-0">
             <h2 className="text-2xl font-bold mb-2">Eventa</h2>
               <p className="text-indigo-200 text-base">All in one event manager!</p>
+              <p className="text-indigo-200 text-sm mt-3">Create, manage, and attend events with ease. From concerts to events, we've got you covered.</p>
           </div>
           
           <div>
-              <h3 className="font-semibold mb-4 text-indigo-100 text-base">Company</h3>
+              <h3 className="font-semibold mb-4 text-indigo-100 text-base">Navigation</h3>
               <ul className="space-y-2 text-indigo-200 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Events</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Add Event</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="/events" className="hover:text-white transition-colors">Events</Link></li>
+              <li><Link href="/concerts" className="hover:text-white transition-colors">Concerts</Link></li>
+              <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
             </ul>
           </div>
 
           <div>
               <h3 className="font-semibold mb-4 text-indigo-100 text-base">Resources</h3>
               <ul className="space-y-2 text-indigo-200 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
+              <li><Link href="blm ada" className="hover:text-white transition-colors">Documentation</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Support</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Community</Link></li>
             </ul>
           </div>
           
           <div>
-              <h3 className="font-semibold mb-4 text-indigo-100 text-base">Social</h3>
+              <h3 className="font-semibold mb-4 text-indigo-100 text-base">Connect</h3>
               <ul className="space-y-2 text-indigo-200 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">X</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Linkedin</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Youtube</a></li>
+              <li><Link href="#" className="hover:text-white transition-colors">X / Twitter</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">LinkedIn</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">YouTube</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Instagram</Link></li>
             </ul>
           </div>
         </div>
@@ -85,11 +87,11 @@ export default function Footer() {
                     <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></span>
                     <span>Online Server</span>
                 </div>
-                <span>Copyright 2025</span>
+                <span>Copyright © 2025 Eventa</span>
             </div>
             <div className="flex space-x-6">
-                <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                <a href="#" className="hover:text-white transition-colors">Term of Use</a>
+                <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
+                <Link href="#" className="hover:text-white transition-colors">Terms of Use</Link>
             </div>
             </div>
         </div>

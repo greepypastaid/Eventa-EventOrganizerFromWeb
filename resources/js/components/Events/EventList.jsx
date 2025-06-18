@@ -20,11 +20,19 @@ const SectionTitle = ({ children, viewAllLink }) => (
 );
 
 function EventList({ events, title = "Upcoming Events", viewAllLink = null }) {
+  // Debug events
+  console.log('EventList received events:', events);
+  
   const regularEvents = events?.filter(event => event.event_type === 'regular') || [];
   const concerts = events?.filter(event => event.event_type === 'concert') || [];
   
+  // Debug filtered events
+  console.log('Regular events:', regularEvents);
+  console.log('Concert events:', concerts);
+  
   // On the homepage, we might get a mix. On dedicated pages, we only get one type.
-  const isHomePage = regularEvents.length > 0 && concerts.length > 0;
+  // Changed the logic to detect homepage more effectively
+  const isHomePage = true; // Always show both sections if events exist
 
   if (!events || events.length === 0) {
     return (
@@ -43,33 +51,37 @@ function EventList({ events, title = "Upcoming Events", viewAllLink = null }) {
         
         {isHomePage ? (
           <>
-        <div className="mb-16">
-              <SectionTitle viewAllLink={route('events')}>Upcoming Events</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {regularEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-              <SectionTitle viewAllLink={route('concerts')}>Popular Concerts</SectionTitle>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {concerts.map((event) => (
-                  <EventCard key={event.id} event={event} />
-                ))}
+            {regularEvents.length > 0 && (
+              <div className="mb-16">
+                <SectionTitle viewAllLink={route('events')}>Upcoming Events</SectionTitle>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {regularEvents.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {concerts.length > 0 && (
+              <div>
+                <SectionTitle viewAllLink={route('concerts')}>Popular Concerts</SectionTitle>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {concerts.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div>
             <SectionTitle viewAllLink={viewAllLink}>{title}</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>

@@ -13,19 +13,23 @@ return new class extends Migration
     {
         Schema::create('event_sessions', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('speaker')->nullable();
-            $table->time('startTime');
-            $table->time('endTime');
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('speaker')->nullable();
+            $table->dateTime('start_time');
+            $table->dateTime('end_time');
+            $table->integer('capacity')->nullable();
+            $table->boolean('is_full_day')->default(false);
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('event_sessions');
     }
 };

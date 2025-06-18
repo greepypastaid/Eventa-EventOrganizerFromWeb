@@ -3,21 +3,33 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "lint": "eslint resources/js --ext .js,.jsx",
+        "lint:fix": "eslint resources/js --ext .js,.jsx --fix",
+        "format": "prettier --write \"resources/js/**/*.{js,jsx}\"",
+        "format:check": "prettier --check \"resources/js/**/*.{js,jsx}\"",
+        "format:all": "prettier --write \"**/*.{js,jsx,json,md,css,scss}\"",
+        "clean": "rm -rf public/build node_modules/.vite",
+        "analyze": "vite build --mode analyze"
     },
     "devDependencies": {
         "@headlessui/react": "^2.2.4",
-        "@inertiajs/react": "^2.0.0",
+        "@prettier/plugin-php": "^0.22.4",
         "@tailwindcss/forms": "^0.5.3",
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.8.2",
+        "blade-formatter": "^1.42.2",
         "concurrently": "^9.0.1",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^4.6.2",
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.4.31",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
+        "prettier": "^3.5.3",
+        "prettier-plugin-tailwindcss": "^0.6.12",
         "tailwindcss": "^3.2.1",
         "vite": "^6.2.4"
     },
@@ -27,8 +39,8 @@
         "date-fns": "^4.1.0",
         "lucide-react": "^0.515.0",
         "qrcode.react": "^4.2.0",
-        "react": "^19.1.0",
-        "react-dom": "^19.1.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
         "react-qr-reader": "^3.0.0-beta-1"
     }
 }

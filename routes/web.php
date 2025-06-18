@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\EventSessionController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventController as PublicEventController;
@@ -17,6 +18,7 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/events', [PageController::class, 'events'])->name('events');
 Route::get('/concerts', [PageController::class, 'concerts'])->name('concerts');
 Route::get('/events/{id}', [PageController::class, 'eventDetail'])->name('events.detail');
+Route::get('/api/events/{event}/sessions', [EventSessionController::class, 'getSessions'])->name('events.sessions');
 
 // Dashboard route for all authenticated users
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -43,6 +45,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     // Admin Event CRUD
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('events', EventController::class);
+        
+        // Event Sessions
+        Route::post('events/{event}/sessions', [EventSessionController::class, 'store'])->name('events.sessions.store');
+        Route::put('events/{event}/sessions/{session}', [EventSessionController::class, 'update'])->name('events.sessions.update');
+        Route::delete('events/{event}/sessions/{session}', [EventSessionController::class, 'destroy'])->name('events.sessions.destroy');
     });
 });
 
@@ -56,6 +63,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/events/{id}/register', [RegistrationController::class, 'register'])->name('events.register');
     Route::get('/user/registrations', [RegistrationController::class, 'getUserRegistrations'])->name('user.registrations');
     Route::get('/user/registrations/{id}', [RegistrationController::class, 'getUserRegistration'])->name('user.registrations.show');
+    
+    // Ticket routes
+    Route::get('/tickets/{ticket}', [RegistrationController::class, 'viewTicket'])->name('tickets.view');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Registration routes
+    Route::post('/api/registrations/{registration}/verify', [RegistrationController::class, 'verifyRegistration'])
+        ->name('registrations.verify')
+        ->middleware('admin');
+    Route::post('/api/registrations/{registration}/send-ticket', [RegistrationController::class, 'sendTicket'])
+        ->name('registrations.send-ticket')
+        ->middleware('admin');
 });
 
 require __DIR__.'/auth.php'; 

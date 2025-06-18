@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Modal from '@/Components/Modal';
 import LoginForm from '@/Pages/Auth/Partials/LoginForm';
 import RegisterForm from '@/Pages/Auth/Partials/RegisterForm';
-import MainNavbar from '@/Components/MainNavbar';
+import MainNavbar from '@/Components/Navigation/MainNavbar';
 
 export default function GuestLayout({ children, canResetPassword }) {
     const [showLoginModal, setShowLoginModal] = useState(false);

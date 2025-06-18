@@ -50,7 +50,7 @@ function Navbar() {
             </Link>
             <Link 
               href={route('register')} 
-              className="bg-white text-indigo-700 px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition-colors duration-300 shadow-sm"
+              className="bg-white text-indigo-700 px-5 py-2 rounded-full font-semibold hover:bg-indigo-100 transition-colors duration-300 shadow-sm"
               onClick={(e) => {
                 e.preventDefault();
                 document.dispatchEvent(new CustomEvent('open-register-modal'));
@@ -93,7 +93,7 @@ function Navbar() {
               </Link>
               <Link 
                 href={route('register')} 
-                className="bg-white text-indigo-700 block w-full py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                className="bg-white text-indigo-700 block w-full py-2 rounded-lg font-semibold hover:bg-indigo-100 transition-colors"
                 onClick={(e) => {
                   e.preventDefault();
                   setIsMenuOpen(false);

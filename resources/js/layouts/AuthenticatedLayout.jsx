@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import MainNavbar from '@/Components/MainNavbar';
+import MainNavbar from '@/Components/Navigation/MainNavbar';
 
 export default function AuthenticatedLayout({ header, children }) {
     const auth = usePage().props.auth;

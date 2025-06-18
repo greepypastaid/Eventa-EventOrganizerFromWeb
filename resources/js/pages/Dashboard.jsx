@@ -3,13 +3,54 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import CreateEventModal from './Admin/Events/CreateEventModal';
 import { QRCodeSVG } from 'qrcode.react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+
+// Format time function to handle ISO time strings
+const formatTime = (timeString) => {
+    if (!timeString) return '00:00';
+    
+    try {
+        // Handle ISO format time strings
+        if (timeString.includes('T')) {
+            const date = parseISO(timeString);
+            return format(date, 'HH:mm');
+        }
+        
+        // Handle simple time strings
+        return timeString;
+    } catch (error) {
+        console.error("Error formatting time:", error);
+        return '00:00';
+    }
+};
+
+// Format date function to handle ISO date strings
+const formatDate = (dateString) => {
+    if (!dateString) return 'Date not set';
+    
+    try {
+        // Parse ISO date string
+        if (dateString.includes('T')) {
+            const date = parseISO(dateString);
+            return format(date, 'dd MMM yyyy');
+        }
+        
+        // Handle regular date strings
+        return format(new Date(dateString), 'dd MMM yyyy');
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return 'Invalid date';
+    }
+};
 
 // Ticket component that can be printed
 const PrintableTicket = ({ registration, event, onClose }) => {
     // Use the actual registration code from the backend
     const ticketCode = registration?.registration_code || `EVT-INVALID`;
     const attendeeName = registration?.custom_fields?.name || registration?.user?.name || 'N/A';
+    
+    // Format the time for ticket display
+    const formattedTime = formatTime(event.time);
     
     const handlePrint = () => {
         // First capture the SVG QR code
@@ -34,42 +75,111 @@ const PrintableTicket = ({ registration, event, onClose }) => {
                             font-family: Arial, sans-serif;
                             margin: 0;
                             padding: 20px;
+                            background-color: #f3f4f6;
                         }
                         .ticket {
-                            max-width: 600px;
+                            max-width: 900px;
                             margin: 0 auto;
-                            border: 1px solid #ddd;
-                            border-radius: 8px;
+                            border: 2px solid #6366f1;
+                            border-radius: 12px;
                             overflow: hidden;
+                            display: flex;
+                            flex-direction: row;
+                            background: white;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                            position: relative;
+                            height: 450px;
                         }
                         .ticket-header {
-                            background-color: #6366f1;
+                            background: #7c3aed;
                             color: white;
-                            padding: 20px;
+                            padding: 15px;
                             text-align: center;
+                            width: 35%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            border-right: 2px dashed #ffffff50;
+                        }
+                        .ticket-header h1 {
+                            font-size: 22px;
+                            margin: 0 0 8px 0;
+                            font-weight: bold;
+                        }
+                        .ticket-header p {
+                            font-size: 14px;
+                            margin: 0 0 12px 0;
+                            opacity: 0.9;
+                        }
+                        .ticket-venue {
+                            background: rgba(255, 255, 255, 0.15);
+                            padding: 10px;
+                            border-radius: 8px;
+                            margin-bottom: 12px;
+                        }
+                        .ticket-venue p {
+                            margin: 2px 0;
+                            font-size: 13px;
+                            opacity: 0.9;
+                        }
+                        .ticket-identity {
+                            background: rgba(255, 255, 255, 0.15);
+                            padding: 12px;
+                            border-radius: 8px;
+                        }
+                        .ticket-identity p {
+                            margin: 2px 0;
+                            font-size: 13px;
                         }
                         .ticket-body {
-                            padding: 20px;
-                        }
-                        .ticket-info {
+                            padding: 15px;
+                            width: 65%;
+                            background: white;
                             display: flex;
-                            justify-content: space-between;
-                            margin-bottom: 20px;
-                            padding: 10px 0;
-                            border-bottom: 1px solid #eee;
+                            flex-direction: column;
                         }
                         .ticket-qr {
                             text-align: center;
-                            margin: 20px 0;
+                            margin: 10px 0;
+                            padding: 10px;
+                            background: #f8fafc;
+                            border-radius: 8px;
+                            flex-grow: 1;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        .ticket-qr svg {
+                            width: 300px !important;
+                            height: 300px !important;
+                            padding: 12px;
+                            background: white;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                         }
                         .ticket-footer {
-                            background-color: #f9fafb;
-                            padding: 15px;
-                            text-align: center;
-                            font-size: 14px;
-                            color: #6b7280;
+                            position: absolute;
+                            bottom: 10px;
+                            right: 15px;
+                            background: #f8fafc;
+                            padding: 6px 12px;
+                            font-size: 12px;
+                            color: #4b5563;
+                            border-radius: 6px;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
                         }
                         @media print {
+                            body {
+                                background: white;
+                                padding: 0;
+                                margin: 0;
+                            }
+                            .ticket {
+                                box-shadow: none;
+                                border: 2px solid #6366f1;
+                                height: 450px;
+                                page-break-inside: avoid;
+                            }
                             .no-print {
                                 display: none;
                             }
@@ -83,35 +193,23 @@ const PrintableTicket = ({ registration, event, onClose }) => {
                     <div class="ticket">
                         <div class="ticket-header">
                             <h1>${event.title}</h1>
-                            <p>${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${event.time || '00:00'}</p>
+                            <p>${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${formattedTime}</p>
+                            <div class="ticket-venue">
+                                <p><strong>Location:</strong> ${event.location}</p>
+                                <p><strong>Organizer:</strong> ${event.organizer}</p>
+                            </div>
+                            <div class="ticket-identity">
+                                <p><strong>Attendee:</strong> ${attendeeName}</p>
+                                <p><strong>Ticket ID:</strong> ${ticketCode}</p>
+                            </div>
                         </div>
                         <div class="ticket-body">
-                            <div className="ticket-info">
-                                <div>
-                                    <strong>Attendee</strong>
-                                    <p>${attendeeName}</p>
-                                </div>
-                                <div>
-                                    <strong>Ticket ID</strong>
-                                    <p>${ticketCode}</p>
-                                </div>
-                            </div>
-                            <div className="ticket-info">
-                                <div>
-                                    <strong>Location</strong>
-                                    <p>${event.location}</p>
-                                </div>
-                                <div>
-                                    <strong>Organizer</strong>
-                                    <p>${event.organizer}</p>
-                                </div>
-                            </div>
-                            <div className="ticket-qr">
+                            <div class="ticket-qr">
                                 ${qrCodeContent}
                             </div>
                         </div>
-                        <div className="ticket-footer">
-                            <p>Please present this ticket at the event entrance for check-in.</p>
+                        <div class="ticket-footer">
+                            Please present this ticket at the event entrance for check-in
                         </div>
                     </div>
                 </body>
@@ -138,7 +236,7 @@ const PrintableTicket = ({ registration, event, onClose }) => {
                         <h4 className="font-bold text-indigo-700">{event ? event.title : 'Event'}</h4>
                         <p className="text-sm text-gray-600">
                             {event && event.date 
-                                ? `${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${event.time || '00:00'}`
+                                ? `${format(new Date(event.date), 'eeee, d MMMM yyyy')} at ${formattedTime}`
                                 : 'Date not available'
                             }
                         </p>
@@ -187,15 +285,14 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
     const userUpcomingEvents = upcomingEvents || [];
 
     return (
-        <AuthenticatedLayout
+        <AuthenticatedLayout 
             auth={auth}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                {isAdmin ? "Event Organizer Dashboard" : "My Events Dashboard"}
-            </h2>}
+            header={null}
+            headerClassName="hidden"
         >
             <Head title="Dashboard" />
 
-            <div className="py-12">
+            <div className="py-12 pt-32">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {isAdmin ? (
                         <>
@@ -283,7 +380,7 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-500">{event.date}</div>
+                                                    <div className="text-sm text-gray-500">{formatDate(event.date)}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{event.registrations_count || 0}</div>
@@ -361,12 +458,21 @@ export default function Dashboard({ auth, stats, recentEvents, userRegistrations
                                                                 View Event
                                                             </Link>
                                                         )}
-                                                        <button
-                                                            onClick={() => setSelectedTicket(registration)}
-                                                            className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
-                                                        >
-                                                            View Ticket
-                                                        </button>
+                                                        {registration.ticket_id ? (
+                                                            <button
+                                                                onClick={() => setSelectedTicket(registration)}
+                                                                className="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700"
+                                                            >
+                                                                View Ticket
+                                                            </button>
+                                                        ) : (
+                                                            <div className="text-yellow-600 text-sm flex items-center">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                                Pending Approval
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

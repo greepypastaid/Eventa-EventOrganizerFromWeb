@@ -1,251 +1,299 @@
-# Eventa - All in One Event Organizer
+<div align="center">
+  <img src="public/images/logo.png" alt="Eventa Logo" width="200"/>
+  <h1>Eventa - Platform Manajemen Acara</h1>
+  <p>
+    <strong>Platform all-in-one untuk membuat, mengelola, dan menghadiri acara dengan mudah.</strong>
+  </p>
+  <p>
+    <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel"></a>
+    <a href="https://react.dev"><img src="https://img.shields.io/badge/React-18.x-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"></a>
+    <a href="https://inertiajs.com"><img src="https://img.shields.io/badge/Inertia.js-007bff?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js"></a>
+    <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"></a>
+    <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"></a>
+  </p>
+</div>
 
-![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Inertia.js](https://img.shields.io/badge/Inertia.js-9553E9?style=for-the-badge&logo=inertia&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+---
 
-Eventa adalah platform manajemen event modern yang dibangun dengan Laravel sebagai backend dan React + Inertia.js sebagai frontend. Platform ini memungkinkan pengguna untuk menemukan, membuat, dan mengelola berbagai jenis event secara online dengan antarmuka yang intuitif dan menarik.
+## 📝 Tentang Proyek
 
-## 📋 Daftar Isi
+**Eventa** adalah aplikasi web modern yang dirancang untuk menyederhanakan proses penyelenggaraan acara. Dibangun dengan tumpukan teknologi TALL yang dimodifikasi (Laravel & React/Inertia), platform ini menyediakan antarmuka yang mulus dan reaktif bagi penyelenggara dan peserta. Mulai dari pembuatan halaman acara yang menarik hingga manajemen pendaftaran dan check-in peserta, Eventa menyediakan semua alat yang Anda butuhkan.
 
-- [Fitur](#-fitur)
-- [Teknologi](#-teknologi)
-- [Persyaratan Sistem](#-persyaratan-sistem)
-- [Instalasi](#-instalasi)
-- [Menjalankan Aplikasi](#-menjalankan-aplikasi)
-- [Struktur Proyek](#-struktur-proyek)
-- [Panduan Pengembangan](#-panduan-pengembangan)
-- [Troubleshooting](#-troubleshooting)
+<div align="center">
+  <img src="https://via.placeholder.com/800x400?text=Eventa+Screenshot" alt="Eventa Screenshot" width="80%" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+  <p><em>Tampilan Dashboard Eventa</em></p>
+</div>
 
-## ✨ Fitur
+## ✨ Fitur Utama
 
-- **Pencarian Event**: Temukan event berdasarkan kategori, lokasi, dan tanggal
-- **Detail Event**: Lihat informasi lengkap tentang event, termasuk deskripsi, lokasi, tanggal, dan harga
-- **Countdown Timer**: Hitung mundur menuju tanggal pelaksanaan event
-- **Tampilan Responsif**: Desain yang optimal untuk semua ukuran layar
-- **Navigasi Transparan**: Navbar yang elegan mengambang di atas hero section
-- **Kategori Event**: Browse event berdasarkan kategori (konser, teknologi, bisnis, dll)
-- **Testimonial**: Ulasan dari pengguna yang telah menggunakan platform
+- **Untuk Peserta:**
+  - 🌐 **Landing Page Dinamis:** Halaman utama yang menarik menampilkan acara unggulan.
+  - 🔍 **Pencarian & Penemuan Acara:** Mudah menemukan acara berdasarkan kategori, tanggal, atau lokasi.
+  - 📄 **Halaman Detail Acara:** Informasi lengkap termasuk deskripsi, jadwal sesi, pembicara, dan lokasi.
+  - 🎟️ **Pendaftaran Mudah:** Proses pendaftaran yang sederhana untuk acara.
+  - 📱 **Tiket Digital:** Akses tiket acara melalui QR code yang dapat disimpan di perangkat.
+  - 📅 **Pengingat Acara:** Notifikasi untuk acara yang akan datang.
 
-## 🛠️ Teknologi
+- **Untuk Penyelenggara (Admin):**
+  - 🛠️ **Dashboard Admin:** Dasbor terpusat untuk mengelola semua aspek acara.
+  - ➕ **Manajemen Acara & Sesi:** Buat, perbarui, dan hapus acara beserta sesi-sesinya.
+  - 🎨 **Kustomisasi Tema:** Sesuaikan tampilan halaman acara dengan logo dan warna merek Anda.
+  - 📊 **Dasbor Analitik:** Pantau statistik pendaftaran dan kehadiran secara real-time.
+  - ✅ **Manajemen Check-in:** Lakukan check-in peserta dengan mudah menggunakan pemindai QR code.
+  - 🔔 **Manajemen Notifikasi:** Kirim pemberitahuan penting kepada peserta terdaftar.
+  - 📈 **Laporan & Ekspor Data:** Hasilkan laporan komprehensif dan ekspor data ke format yang umum digunakan.
 
-Proyek ini dibangun menggunakan stack teknologi modern:
+## 🛠️ Tumpukan Teknologi
 
-- **Backend**:
-  - Laravel 12.x - PHP framework
-  - Laravel Fortify - Autentikasi
-  - Laravel Sanctum - API Authentication
-  - MySQL/PostgreSQL - Database
+### Backend
+- **[Laravel 12](https://laravel.com/)**: Framework PHP modern dengan sintaks yang ekspresif dan eleganuntuk pengembangan web yang menyenangkan.
+- **[Laravel Fortify](https://laravel.com/docs/fortify)**: Implementasi otentikasi backend yang kuat dengan fitur seperti verifikasi email, pemulihan kata sandi, dan otentikasi dua faktor.
+- **[Laravel Sanctum](https://laravel.com/docs/sanctum)**: Sistem otentikasi API ringan untuk SPA (Single Page Applications), aplikasi seluler, dan API sederhana berbasis token.
 
-- **Frontend**:
-  - React 19.x - JavaScript library
-  - Inertia.js - Penghubung Laravel-React tanpa API
-  - Tailwind CSS - Framework CSS utility-first
-  - Vite - Build tool dan dev server
+### Frontend
+- **[React 18](https://react.dev/)**: Library JavaScript untuk membangun antarmuka pengguna dengan komponen yang dapat digunakan kembali dan performa yang dioptimalkan.
+- **[Inertia.js](https://inertiajs.com/)**: Jembatan yang menghubungkan backend Laravel dengan frontend React tanpa perlu membuat API terpisah.
+- **[Vite](https://vitejs.dev/)**: Build tool frontend modern yang menawarkan pengalaman pengembangan yang luar biasa cepat dengan Hot Module Replacement (HMR).
+- **[Tailwind CSS](https://tailwindcss.com/)**: Framework CSS utility-first yang memungkinkan pengembangan UI yang cepat dan konsisten tanpa meninggalkan HTML.
 
-## 💻 Persyaratan Sistem
+### Alat Pengembangan
+- **[ESLint](https://eslint.org/)**: Linter JavaScript yang membantu menemukan dan memperbaiki masalah dalam kode JavaScript.
+- **[Prettier](https://prettier.io/)**: Pemformat kode yang memastikan gaya kode yang konsisten di seluruh proyek.
+- **[PHPUnit](https://phpunit.de/)**: Framework pengujian untuk PHP yang memungkinkan pengujian otomatis yang komprehensif.
 
-Pastikan sistem Anda memenuhi persyaratan berikut sebelum instalasi:
-
-- **PHP** >= 8.2
-- **Composer** >= 2.0
-- **Node.js** >= 18.0
-- **NPM** >= 9.0 atau **Yarn** >= 1.22
-- **MySQL** >= 8.0 atau **PostgreSQL** >= 14
-- **Git**
-
-## 📥 Instalasi
-
-Ikuti langkah-langkah berikut untuk menginstal dan menyiapkan proyek Eventa di lingkungan lokal Anda:
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/yourusername/eventa-event-organizer.git
-cd eventa-event-organizer
-```
-
-### 2. Instal Dependensi PHP
-
-```bash
-composer install
-```
-
-### 3. Konfigurasi Environment
-
-```bash
-# Salin file .env.example menjadi .env
-cp .env.example .env
-
-# Generate application key
-php artisan key:generate
-```
-
-### 4. Konfigurasi Database
-
-Edit file `.env` dan sesuaikan konfigurasi database:
-
-```
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=eventa
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 5. Jalankan Migrasi dan Seeder
-
-```bash
-# Buat database (pastikan database sudah dibuat sebelumnya)
-php artisan migrate
-
-# Jalankan seeder untuk mengisi data awal
-php artisan db:seed
-```
-
-### 6. Instal Dependensi JavaScript
-
-```bash
-npm install
-# atau jika menggunakan Yarn
-yarn install
-```
-
-### 7. Kompilasi Aset
-
-```bash
-npm run dev
-# atau untuk production
-npm run build
-```
-
-## 🚀 Menjalankan Aplikasi
-
-Untuk menjalankan aplikasi di lingkungan pengembangan, ikuti langkah-langkah berikut:
-
-### Metode 1: Menjalankan Server Backend dan Frontend Secara Terpisah
-
-1. **Jalankan Server Laravel**
-
-```bash
-php artisan serve
-```
-
-Server Laravel akan berjalan di `http://localhost:8000`
-
-2. **Jalankan Vite Development Server**
-
-Buka terminal baru dan jalankan:
-
-```bash
-npm run dev
-```
-
-### Metode 2: Menjalankan Semua Server Sekaligus (Disarankan)
-
-Laravel menyediakan script untuk menjalankan semua server sekaligus:
-
-```bash
-composer dev
-```
-
-Perintah ini akan menjalankan:
-- Server Laravel di `http://localhost:8000`
-- Queue worker untuk background jobs
-- Log viewer (Laravel Pail)
-- Vite development server
-
-### Mengakses Aplikasi
-
-Buka browser dan kunjungi:
-- **URL:** http://localhost:8000
+### Database
+- Kompatibel dengan **MySQL**, **PostgreSQL**, dan **SQLite**.
+- Migrasi database yang terkelola dengan baik untuk versioning skema.
+- Seeder untuk data pengujian dan pengembangan.
 
 ## 📂 Struktur Proyek
 
-Berikut adalah struktur folder utama dalam proyek Eventa:
+Eventa mengikuti struktur proyek Laravel standar dengan beberapa penyesuaian untuk integrasi React dan Inertia:
 
 ```
-eventa-event-organizer/
-├── app/                    # Kode PHP Laravel (Models, Controllers, dll)
-├── bootstrap/              # File bootstrap Laravel
-├── config/                 # Konfigurasi Laravel
-├── database/               # Migrations, seeders, dan factories
-├── public/                 # File publik yang dapat diakses langsung
-├── resources/              # Aset yang perlu dikompilasi
-│   ├── css/                # File CSS
-│   ├── js/                 # Kode JavaScript dan React
-│   │   ├── components/     # Komponen React yang dapat digunakan kembali
-│   │   │   ├── events/     # Komponen terkait event (EventCard, EventList, dll)
-│   │   │   ├── home/       # Komponen untuk halaman beranda (Hero, CTA, dll)
-│   │   │   └── layout/     # Komponen layout (Navbar, Footer, dll)
-│   │   ├── Layouts/        # Layout utama aplikasi
-│   │   └── Pages/          # Komponen halaman utama (HomePage, EventsPage, dll)
-│   └── views/              # Template Blade Laravel
-├── routes/                 # Definisi rute aplikasi
-├── storage/                # File yang dihasilkan aplikasi (logs, cache, dll)
-├── tests/                  # Unit dan feature tests
-├── vendor/                 # Dependensi PHP (dikelola oleh Composer)
-├── node_modules/           # Dependensi JavaScript (dikelola oleh NPM/Yarn)
-├── .env                    # Konfigurasi environment
-├── composer.json           # Definisi dependensi PHP
-└── package.json            # Definisi dependensi JavaScript
+Eventa/
+├── app/                  # Kode PHP utama aplikasi
+│   ├── Actions/          # Kelas aksi Fortify
+│   ├── Console/          # Perintah Artisan kustom
+│   ├── Http/             # Controllers, Middleware, Requests
+│   ├── Models/           # Model Eloquent
+│   └── Providers/        # Service Providers
+├── bootstrap/            # File bootstrap aplikasi
+├── config/               # File konfigurasi
+├── database/             # Migrasi dan seeder database
+├── public/               # Aset yang dapat diakses publik
+├── resources/            # Aset frontend (JS, CSS, views)
+│   ├── css/              # File stylesheet
+│   ├── js/               # Kode JavaScript/React
+│   │   ├── components/   # Komponen React
+│   │   │   ├── Navigation/  # Komponen navigasi
+│   │   │   └── UI/          # Komponen UI yang dapat digunakan kembali
+│   │   ├── layouts/      # Layout React
+│   │   └── pages/        # Halaman React
+│   └── views/            # Template Blade
+├── routes/               # Definisi rute aplikasi
+├── storage/              # File yang dihasilkan aplikasi
+└── tests/                # Tes otomatis
 ```
 
-## 📝 Panduan Pengembangan
+## 🚀 Memulai
+
+Ikuti langkah-langkah ini untuk menjalankan salinan lokal dari proyek ini.
+
+### Prasyarat
+
+Pastikan lingkungan pengembangan Anda memenuhi persyaratan berikut:
+- PHP >= 8.2
+- Composer 2.x
+- Node.js >= 18.x
+- NPM >= 9.x
+- Git
+- Server Database (misalnya, MySQL, MariaDB, atau PostgreSQL)
+
+### Panduan Instalasi
+
+1.  **Clone Repositori**
+    ```bash
+    git clone https://github.com/[YOUR_USERNAME]/Eventa-EventOrganizerFromWeb.git
+    cd Eventa-EventOrganizerFromWeb
+    ```
+
+2.  **Instal Dependensi Backend**
+    ```bash
+    composer install
+    ```
+
+3.  **Instal Dependensi Frontend**
+    ```bash
+    npm install
+    ```
+    > **Catatan:** Jika Anda mengalami masalah `ERESOLVE peer dependency`, coba jalankan `npm install --legacy-peer-deps`.
+
+4.  **Konfigurasi Lingkungan**
+    - Salin file `.env.example` menjadi `.env`.
+      ```bash
+      cp .env.example .env
+      ```
+    - Buat kunci aplikasi yang unik.
+      ```bash
+      php artisan key:generate
+      ```
+
+5.  **Konfigurasi Database**
+    - Buka file `.env` dan perbarui variabel koneksi database sesuai dengan pengaturan lokal Anda.
+      ```env
+      DB_CONNECTION=mysql
+      DB_HOST=127.0.0.1
+      DB_PORT=3306
+      DB_DATABASE=eventa
+      DB_USERNAME=root
+      DB_PASSWORD=
+      ```
+    - Pastikan Anda telah membuat database `eventa` di server database Anda.
+
+6.  **Jalankan Migrasi Database**
+    - Perintah ini akan membuat semua tabel yang diperlukan di database Anda.
+      ```bash
+      php artisan migrate
+      ```
+
+7.  **Seed Database (Opsional)**
+    - Untuk mengisi database dengan data contoh:
+      ```bash
+      php artisan db:seed
+      ```
+
+## 🏃 Menjalankan Aplikasi
+
+1.  **Jalankan Server Pengembangan**
+    - Perintah ini akan memulai server Vite untuk frontend dan server PHP untuk backend secara bersamaan.
+      ```bash
+      npm run dev
+      ```
+    - Atau, Anda dapat menjalankan server PHP secara terpisah jika diperlukan:
+      ```bash
+      php artisan serve
+      ```
+
+2.  **Akses Aplikasi**
+    - Aplikasi Anda sekarang berjalan di **[http://localhost:8000](http://localhost:8000)**.
+    - Server Vite berjalan di **[http://localhost:5173](http://localhost:5173)**.
+
+### Akun Pengguna
+
+- **Pendaftaran**: Anda dapat mendaftarkan pengguna baru melalui halaman registrasi.
+- **Membuat Pengguna Admin**: Untuk mengakses fungsionalitas admin, ubah peran pengguna di database (`users` tabel, kolom `role`) menjadi `admin`, atau gunakan perintah Artisan kustom:
+  ```bash
+  php artisan make:admin email@example.com
+  ```
+  Atau melalui Tinker:
+  ```php
+  php artisan tinker
+  >>> $user = App\Models\User::find(1);
+  >>> $user->role = 'admin';
+  >>> $user->save();
+  ```
+
+## 💻 Panduan Pengembangan
 
 ### Konvensi Kode
 
-- Gunakan PSR-12 untuk kode PHP
-- Gunakan ESLint dan Prettier untuk kode JavaScript/React
-- Ikuti konvensi penamaan Laravel dan React
+Eventa mengikuti konvensi kode standar untuk Laravel dan React:
 
-### Menambahkan Halaman Baru
+- **PHP**: Mengikuti [PSR-12](https://www.php-fig.org/psr/psr-12/) dengan beberapa penyesuaian Laravel.
+- **JavaScript/React**: Mengikuti konvensi ESLint dan Prettier yang dikonfigurasi.
+- **CSS**: Menggunakan Tailwind CSS dengan pendekatan utility-first.
 
-1. Buat komponen halaman di `resources/js/Pages/`
-2. Tambahkan rute di `routes/web.php`
-3. Buat controller jika diperlukan di `app/Http/Controllers/`
+### Alur Kerja Pengembangan
 
-### Menambahkan Komponen Baru
+1. **Komponen Frontend**:
+   - Komponen UI generik ditempatkan di `resources/js/components/UI/`
+   - Komponen khusus fitur ditempatkan di direktori yang sesuai dengan fitur
+   - Gunakan pendekatan komponen fungsional dengan React Hooks
 
-1. Buat komponen di folder yang sesuai di `resources/js/components/`
-2. Impor dan gunakan komponen tersebut di halaman atau komponen lain
+2. **Backend**:
+   - Ikuti pendekatan MVC Laravel standar
+   - Gunakan fitur Laravel seperti Form Requests untuk validasi
+   - Implementasikan kebijakan untuk otorisasi
 
-### Menambahkan Model dan Migrasi
+### Menjalankan Tes
 
-```bash
-# Membuat model dengan migrasi dan controller
-php artisan make:model NamaModel -mc
+Proyek ini dilengkapi dengan suite pengujian PHPUnit untuk backend dan Jest untuk frontend.
 
-# Menjalankan migrasi baru
-php artisan migrate
-```
+- **Tes Backend**:
+  ```bash
+  php artisan test
+  ```
 
-## ❓ Troubleshooting
+- **Tes Frontend**:
+  ```bash
+  npm run test
+  ```
 
-### Masalah Umum dan Solusi
+- **Linting**:
+  ```bash
+  npm run lint
+  ```
 
-1. **Error: EACCES permission denied**
-   - Solusi: Pastikan Anda memiliki izin yang tepat untuk folder proyek
+- **Formatting**:
+  ```bash
+  npm run format
+  ```
 
-2. **Error: Database connection refused**
-   - Solusi: Pastikan database server berjalan dan kredensial di file `.env` benar
+> **Catatan Penting:** Pengujian backend dikonfigurasi untuk menggunakan database SQLite. Jika Anda mengalami galat `could not find driver`, itu berarti ekstensi `php_pdo_sqlite` tidak diaktifkan di konfigurasi PHP Anda (`php.ini`). Anda harus mengaktifkannya agar pengujian dapat berjalan.
 
-3. **Error: Node Sass could not find a binding for your current environment**
-   - Solusi: Jalankan `npm rebuild node-sass`
+## 🤝 Panduan Kontribusi
 
-4. **Error: Vite manifest not found**
-   - Solusi: Jalankan `npm run build` atau pastikan Vite server berjalan dengan `npm run dev`
+Kami sangat menghargai kontribusi dari komunitas! Berikut adalah langkah-langkah untuk berkontribusi pada proyek Eventa:
 
-### Mendapatkan Bantuan Lebih Lanjut
+1. Fork repositori
+2. Buat branch fitur (`git checkout -b feature/amazing-feature`)
+3. Commit perubahan Anda (`git commit -m 'Add some amazing feature'`)
+4. Push ke branch (`git push origin feature/amazing-feature`)
+5. Buka Pull Request
 
-Jika Anda mengalami masalah yang tidak tercantum di atas, silakan:
-- Buka issue di GitHub repository
-- Periksa dokumentasi Laravel dan React
-- Bergabung dengan forum komunitas Laravel atau React
+### Standar Kontribusi
+
+- Pastikan kode Anda mengikuti konvensi kode proyek
+- Tambahkan tes untuk fitur atau perbaikan baru
+- Perbarui dokumentasi jika diperlukan
+- Pastikan semua tes lulus sebelum mengirimkan PR
+
+## 📊 Roadmap
+
+Berikut adalah fitur yang direncanakan untuk rilis mendatang:
+
+- [ ] Integrasi pembayaran untuk tiket berbayar
+- [ ] Sistem tiket dengan tingkatan berbeda
+- [ ] Aplikasi seluler untuk peserta
+- [ ] Integrasi kalender dengan Google/Apple Calendar
+- [ ] Sistem pemasaran email untuk penyelenggara
+- [ ] Dukungan untuk acara hybrid (online dan offline)
+- [ ] Analitik lanjutan dengan visualisasi data
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+Proyek ini dilisensikan di bawah **MIT License**. Lihat file `LICENSE` untuk detail lebih lanjut.
+
+## 👥 Tim Pengembang
+
+Eventa dikembangkan dan dikelola oleh tim pengembang yang berdedikasi. Kami selalu terbuka untuk kolaborasi dan kontribusi dari komunitas.
+
+## 📞 Kontak & Dukungan
+
+Jika Anda memiliki pertanyaan atau membutuhkan bantuan, jangan ragu untuk menghubungi kami:
+
+- **Email**: support@eventa-app.com
+- **GitHub Issues**: Untuk melaporkan bug atau meminta fitur
+- **Dokumentasi**: [docs.eventa-app.com](https://docs.eventa-app.com)
+
+---
+
+<div align="center">
+  <p>Dibuat dengan ❤️ oleh Tim Eventa</p>
+  <p>
+    <a href="https://github.com/eventa">GitHub</a> •
+    <a href="https://twitter.com/eventa_app">Twitter</a> •
+    <a href="https://www.instagram.com/eventa_app">Instagram</a>
+  </p>
+</div>

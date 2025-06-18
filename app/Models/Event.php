@@ -7,38 +7,38 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Event extends Model
 {
-    use HasFactory;
-    
-    protected $fillable = [
-        'title', 
-        'organizer',
-        'description', 
-        'date', 
-        'time',
-        'location',
-        'ticket_price',
-        'logo_url',
-        'photo_url',
-        'primary_color',
-        'secondary_color',
-        'is_hero',
-        'event_type'
-    ];
+  use HasFactory;
 
-    protected $casts = [
-        'date' => 'date',
-        'time' => 'datetime',
-        'ticket_price' => 'decimal:2',
-        'is_hero' => 'boolean',
-    ];
+  protected $fillable = [
+    'title',
+    'organizer',
+    'description',
+    'date',
+    'time',
+    'location',
+    'ticket_price',
+    'logo_url',
+    'photo_url',
+    'primary_color',
+    'secondary_color',
+    'is_hero',
+    'event_type',
+  ];
 
-    public function sessions()
-    {
-        return $this->hasMany(EventSession::class);
-    }
+  protected $casts = [
+    'date' => 'datetime',
+    'time' => 'datetime',
+    'ticket_price' => 'decimal:2',
+    'is_hero' => 'boolean',
+  ];
 
-    public function registrations()
-    {
-        return $this->hasMany(Registration::class);
-    }
+  public function sessions()
+  {
+    return $this->hasMany(EventSession::class);
+  }
+
+  public function registrations()
+  {
+    return $this->hasMany(Registration::class);
+  }
 }

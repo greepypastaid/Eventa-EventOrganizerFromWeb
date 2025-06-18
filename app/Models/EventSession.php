@@ -3,25 +3,47 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Attendance; // Tambahkan baris ini jika belum ada
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Attendance;
 
 class EventSession extends Model
 {
-    protected $fillable = [
-        'title',
-        'speaker',
-        'startTime',
-        'endTime',
-        'event_id',
-    ];
+  use HasFactory;
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class, 'event_id');
-    }
+  protected $fillable = [
+    'event_id',
+    'name',
+    'description',
+    'speaker',
+    'start_time',
+    'end_time',
+    'capacity',
+    'is_full_day',
+  ];
 
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class);
-    }
+  protected $casts = [
+    'start_time' => 'datetime',
+    'end_time' => 'datetime',
+    'is_full_day' => 'boolean',
+  ];
+
+  public function event()
+  {
+    return $this->belongsTo(Event::class);
+  }
+
+  public function attendances()
+  {
+    return $this->hasMany(Attendance::class);
+  }
+
+  public function registrationSessions()
+  {
+    return $this->hasMany(RegistrationSession::class);
+  }
+
+  public function registrations()
+  {
+    return $this->belongsToMany(Registration::class, 'registration_sessions');
+  }
 }

@@ -326,7 +326,7 @@ export default function CreateEventModal({ show, onClose }) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 mr-2"
+                            className="px-4 py-2 bg-indigo-300 text-indigo-800 rounded-md hover:bg-indigo-400 mr-2"
                         >
                             Cancel
                         </button>
